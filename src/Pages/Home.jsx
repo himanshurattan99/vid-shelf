@@ -31,11 +31,13 @@ const Home = ({ videos }) => {
                 {displayedVideos.map((video) => (
                     <div key={video.id} className="hover:bg-[#1e1e1e] rounded-lg cursor-pointer overflow-hidden transition-all hover:scale-105">
                         <div className="relative">
-                            {/* Video preview card with duration overlay */}
-                            <video src={video.url} className="w-full aspect-video object-cover rounded-lg" controls={false} />
-                            <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
-                                hh:mm:ss
-                            </span>
+                            {/* Link to video watch page with preview card and duration overlay */}
+                            <Link to={`/watch?v=${video.id}`}>
+                                <video src={video.url} className="w-full aspect-video object-cover rounded-lg" controls={false} />
+                                <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
+                                    hh:mm:ss
+                                </span>
+                            </Link>
                         </div>
 
                         <div className="py-1 ps-2 flex justify-between items-start gap-2">

@@ -4,12 +4,24 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
 import Home from './Pages/Home'
+import Video from './Pages/Video'
 
 const App = () => {
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   // State for imported videos, stored as an object for O(1) access
   const [videos, setVideos] = useState({})
+
+  // Cleanup: Revoke all blob URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      Object.values(videos).forEach((video) => {
+        if (video.url) {
+          URL.revokeObjectURL(video.url)
+        }
+      })
+    }
+  }, [videos])
 
   // Toggle sidebar expanded/collapsed state
   const toggleSidebar = () => {
@@ -62,6 +74,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home videos={videos} />} />
           <Route path='/library' element={<Home videos={videos} />} />
+          <Route path='/watch' element={<Video videos={videos} />} />
         </Routes>
       </main>
     </>
