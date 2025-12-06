@@ -14,8 +14,12 @@ const Home = ({ videos }) => {
 
         // For Home page, show random 12 videos
         if (location.pathname === '/') {
-            const shuffledVideos = videosArray.sort(() => 0.5 - Math.random()).slice(0, 12)
-            return shuffledVideos
+            const shuffled = [...videosArray]
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, 12)
         }
         // For Library page, show all videos
         else if (location.pathname === '/library') {
@@ -24,6 +28,21 @@ const Home = ({ videos }) => {
 
         return []
     }, [videos, location.pathname])
+
+    // Helper function to format video duration
+    const formatDuration = (seconds) => {
+        if (!seconds) return "00:00"
+
+        const date = new Date(seconds * 1000)
+        const hh = date.getUTCHours()
+        const mm = date.getUTCMinutes()
+        const ss = date.getUTCSeconds().toString().padStart(2, "0")
+
+        if (hh) {
+            return `${hh}:${mm.toString().padStart(2, "0")}:${ss}`
+        }
+        return `${mm}:${ss}`
+    }
 
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
@@ -35,7 +54,7 @@ const Home = ({ videos }) => {
                             <Link to={`/watch?v=${video.id}`}>
                                 <video src={video.url} className="w-full aspect-video object-cover rounded-lg" controls={false} />
                                 <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
-                                    hh:mm:ss
+                                    {formatDuration(video.duration)}
                                 </span>
                             </Link>
                         </div>
