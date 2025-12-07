@@ -5,6 +5,7 @@ import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
 import Home from './Pages/Home'
 import Video from './Pages/Video'
+import Error from './Pages/Error'
 import { removeFileExtension, extractVideoId, getVideoDuration } from './utils'
 
 const App = () => {
@@ -77,6 +78,7 @@ const App = () => {
           <Route path='/' element={<Home videos={videos} />} />
           <Route path='/library' element={<Home videos={videos} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
+          <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
       </main>
     </>
