@@ -1,10 +1,11 @@
 import './App.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
 import Home from './Pages/Home'
 import Video from './Pages/Video'
+import { removeFileExtension, extractVideoId, getVideoDuration } from './utils'
 
 const App = () => {
   // State for imported videos, stored as an object for O(1) access
@@ -12,45 +13,28 @@ const App = () => {
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
 
-  // Cleanup: Revoke all blob URLs when component unmounts
+  // Ref to keep track of videos for cleanup
+  const videosRef = useRef(videos)
+
+  // Update ref whenever videos state changes
+  useEffect(() => {
+    videosRef.current = videos
+  }, [videos])
+
+  // Cleanup: Revoke all blob URLs ONLY when component unmounts
   useEffect(() => {
     return () => {
-      Object.values(videos).forEach((video) => {
+      Object.values(videosRef.current).forEach((video) => {
         if (video.url) {
           URL.revokeObjectURL(video.url)
         }
       })
     }
-  }, [videos])
+  }, [])
 
   // Toggle sidebar expanded/collapsed state
   const toggleSidebar = () => {
     setSidebarExpanded(!sidebarExpanded)
-  }
-
-  // Helper function to remove file extension from filename
-  const removeFileExtension = (fileName) => {
-    return fileName.replace(/\.[^/.]+$/, "")
-  }
-
-  // Helper function to extract unique video ID from blob URL
-  const extractVideoId = (videoUrl) => {
-    return videoUrl.split("/").pop()
-  }
-
-  // Helper function to get video duration
-  const getVideoDuration = (videoUrl) => {
-    return new Promise((resolve) => {
-      const video = document.createElement('video')
-      video.preload = 'metadata'
-      video.onloadedmetadata = () => {
-        resolve(video.duration)
-      }
-      video.onerror = () => {
-        resolve(0)
-      }
-      video.src = videoUrl
-    })
   }
 
   // Handle video import from file input
