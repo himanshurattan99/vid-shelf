@@ -1,18 +1,44 @@
 import './App.css'
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
 import Home from './Pages/Home'
 import Video from './Pages/Video'
 import Error from './Pages/Error'
-import { removeFileExtension, extractVideoId, getVideoDuration } from './utils'
+import { removeFileExtension, extractVideoId, getVideoDuration, generateThumbnail } from './utils'
 
 const App = () => {
   // State for imported videos, stored as an object for O(1) access
   const [videos, setVideos] = useState({})
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
+  // State for sidebar mode ('contract' or 'slide')
+  const [sidebarMode, setSidebarMode] = useState('contract')
+
+  const location = useLocation()
+
+  // Update sidebar mode based on route and screen size
+  useEffect(() => {
+    const updateSidebarMode = () => {
+      const isMobile = window.innerWidth < 768
+      const isVideoPage = location.pathname.startsWith('/watch')
+
+      // Use slide mode (overlay) for mobile/video page, contract mode (static) otherwise
+      setSidebarMode((isMobile || isVideoPage) ? 'slide' : 'contract')
+    }
+
+    // Run on mount and resize
+    updateSidebarMode()
+
+    window.addEventListener('resize', updateSidebarMode)
+    return () => window.removeEventListener('resize', updateSidebarMode)
+  }, [location.pathname])
+
+  // Reset sidebar expansion state when switching modes
+  useEffect(() => {
+    setSidebarExpanded(sidebarMode === 'contract')
+  }, [sidebarMode])
 
   // Ref to keep track of videos for cleanup
   const videosRef = useRef(videos)
@@ -28,6 +54,9 @@ const App = () => {
       Object.values(videosRef.current).forEach((video) => {
         if (video.url) {
           URL.revokeObjectURL(video.url)
+        }
+        if (video.thumbnail) {
+          URL.revokeObjectURL(video.thumbnail)
         }
       })
     }
@@ -47,6 +76,7 @@ const App = () => {
         const videoUrl = URL.createObjectURL(file)
         const videoId = extractVideoId(videoUrl)
         const duration = await getVideoDuration(videoUrl)
+        const thumbnail = await generateThumbnail(videoUrl)
 
         // Store video details in object keyed by ID
         newVideosMap[videoId] = {
@@ -55,7 +85,8 @@ const App = () => {
           url: videoUrl,
           type: file.type,
           size: file.size,
-          duration: duration
+          duration: duration,
+          thumbnail: thumbnail
         }
       }
 
@@ -71,7 +102,7 @@ const App = () => {
 
       <main className="flex bg-[#181818] relative">
         {/* Sidebar navigation */}
-        <Sidebar isExpanded={sidebarExpanded} />
+        <Sidebar isExpanded={sidebarExpanded} mode={sidebarMode} />
 
         {/* Application Routes */}
         <Routes>

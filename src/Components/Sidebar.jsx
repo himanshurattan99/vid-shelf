@@ -6,16 +6,16 @@ import tags_icon from '../assets/icons/tags-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import settings_icon from '../assets/icons/settings-icon.png'
 
-const Sidebar = ({ isExpanded = true, deviceType = 'desktop' }) => {
+const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
     // Show labels when sidebar is expanded
     const isLabelVisible = isExpanded
-    // Check if current device is mobile
-    const isMobileDevice = (deviceType === 'mobile')
+    // Check if sidebar is in 'slide' mode (overlay) or 'contract' mode (static)
+    const isSlidingMode = (mode === 'slide')
 
     return (
         <>
-            {/* Sidebar container with dynamic width and padding based on state */}
-            <div className={`h-[92.5vh] ${(isLabelVisible) ? 'md:w-[27%] lg:w-[16%]' : ''} ${(isMobileDevice) ? 'px-3' : 'px-5'} bg-[#181818] text-slate-100 shrink-0 overflow-y-auto transition-transform duration-250`}>
+            {/* Sidebar container: Absolute overlay in 'slide' mode, static width in 'contract' mode */}
+            <div className={`h-[92.5vh] ${(isLabelVisible) ? 'md:w-[27%] lg:w-[16%]' : ''} px-3 md:px-5 bg-[#181818] text-slate-100 shrink-0 overflow-y-auto transition-transform duration-250 ${(isSlidingMode && !isExpanded) ? '-translate-x-full' : ''} ${(isSlidingMode) ? 'absolute z-10' : ''}`}>
                 {/* Home, Playlists and Library section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
                     <Link to={`/`}>

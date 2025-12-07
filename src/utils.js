@@ -47,3 +47,30 @@ export const shuffleArray = (array) => {
     }
     return shuffled
 }
+
+// Helper function to generate video thumbnail
+export const generateThumbnail = (videoUrl) => {
+    return new Promise((resolve) => {
+        const video = document.createElement('video')
+        video.src = videoUrl
+        video.currentTime = 1 // Capture video frame at 1 second mark
+        video.preload = 'metadata'
+
+        video.onloadeddata = () => {
+            const canvas = document.createElement('canvas')
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+            canvas.toBlob((blob) => {
+                const thumbnailUrl = URL.createObjectURL(blob)
+                resolve(thumbnailUrl)
+            }, 'image/jpeg')
+        }
+
+        video.onerror = () => {
+            resolve(null)
+        }
+    })
+}

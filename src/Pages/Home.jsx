@@ -31,9 +31,9 @@ const Home = ({ videos }) => {
                 {displayedVideos.map((video) => (
                     <div key={video.id} className="hover:bg-[#1e1e1e] rounded-lg cursor-pointer overflow-hidden transition-all hover:scale-105">
                         <div className="relative">
-                            {/* Link to video watch page with preview card and duration overlay */}
+                            {/* Link to video watch page with thumbnail card and duration overlay */}
                             <Link to={`/watch?v=${video.id}`}>
-                                <video src={video.url} className="w-full aspect-video object-cover rounded-lg" controls={false} />
+                                <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg bg-gray-800" alt={video.name} />
                                 <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                     {formatDuration(video.duration)}
                                 </span>
