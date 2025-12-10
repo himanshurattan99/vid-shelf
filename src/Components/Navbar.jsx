@@ -78,7 +78,10 @@ const Navbar = ({ onMenuClick, onImport }) => {
                 }
 
                 {/* Hidden file input for video import */}
-                <input onChange={(e) => onImport(e.target.files)}
+                <input onChange={(e) => {
+                    onImport(e.target.files)
+                    e.target.value = ""
+                }}
                     ref={fileInputRef}
                     type="file" accept="video/*" multiple
                     className="hidden"

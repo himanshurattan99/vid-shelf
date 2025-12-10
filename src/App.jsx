@@ -95,6 +95,23 @@ const App = () => {
     }
   }
 
+  // Handle video removal
+  const removeVideo = (videoId) => {
+    setVideos((prevVideos) => {
+      const updatedVideos = { ...prevVideos }
+      const videoToRemove = updatedVideos[videoId]
+
+      // Revoke blob URLs to prevent memory leaks
+      if (videoToRemove) {
+        if (videoToRemove.url) URL.revokeObjectURL(videoToRemove.url)
+        if (videoToRemove.thumbnail) URL.revokeObjectURL(videoToRemove.thumbnail)
+      }
+
+      delete updatedVideos[videoId]
+      return updatedVideos
+    })
+  }
+
   return (
     <>
       {/* Navbar with menu toggle and import functionality */}
@@ -106,8 +123,8 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} />} />
-          <Route path='/library' element={<Home videos={videos} />} />
+          <Route path='/' element={<Home videos={videos} removeVideo={removeVideo} />} />
+          <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
