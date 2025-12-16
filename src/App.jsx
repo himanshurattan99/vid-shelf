@@ -5,12 +5,18 @@ import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
 import Home from './Pages/Home'
 import Video from './Pages/Video'
+import Playlists from './Pages/Playlists'
+import Playlist from './Pages/Playlist'
 import Error from './Pages/Error'
 import { removeFileExtension, extractVideoId, getVideoDuration, generateThumbnail } from './utils'
 
 const App = () => {
   // State for imported videos, stored as an object for O(1) access
   const [videos, setVideos] = useState({})
+  // State for playlists
+  const [playlists, setPlaylists] = useState({
+    watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] }
+  })
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   // State for sidebar mode ('contract' or 'slide')
@@ -112,6 +118,49 @@ const App = () => {
     })
   }
 
+  // Add video to playlist
+  const addVideoToPlaylist = (playlistId, videoId) => {
+    setPlaylists((prevPlaylists) => {
+      const playlist = prevPlaylists[playlistId]
+
+      // Safety check: if playlist doesn't exist, return previous state
+      if (!playlist) return prevPlaylists
+
+      // Check for duplicates to prevent adding the same video twice
+      if (playlist.videoIds.includes(videoId)) {
+        return prevPlaylists
+      }
+
+      // Return new state with updated playlist
+      return {
+        ...prevPlaylists,
+        [playlistId]: {
+          ...playlist,
+          videoIds: [...playlist.videoIds, videoId]
+        }
+      }
+    })
+  }
+
+  // Remove video from playlist
+  const removeVideoFromPlaylist = (playlistId, videoId) => {
+    setPlaylists((prevPlaylists) => {
+      const playlist = prevPlaylists[playlistId]
+
+      // Safety check: if playlist doesn't exist, return previous state
+      if (!playlist) return prevPlaylists
+
+      // Return new state with video removed
+      return {
+        ...prevPlaylists,
+        [playlistId]: {
+          ...playlist,
+          videoIds: playlist.videoIds.filter((id) => id !== videoId)
+        }
+      }
+    })
+  }
+
   return (
     <>
       {/* Navbar with menu toggle and import functionality */}
@@ -123,9 +172,11 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} removeVideo={removeVideo} />} />
-          <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} />} />
+          <Route path='/' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
+          <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
+          <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} />} />
+          <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
       </main>

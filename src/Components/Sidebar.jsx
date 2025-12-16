@@ -35,20 +35,24 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
 
                 {/* Playlists, Tags and Watch Later section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
-                    <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={playlists_icon} className="w-6" alt="" />
-                        {(isLabelVisible) && <span className="truncate">Playlists</span>}
-                    </button>
+                    <Link to='/playlists'>
+                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                            <img src={playlists_icon} className="w-6" alt="" />
+                            {(isLabelVisible) && <span className="truncate">Playlists</span>}
+                        </button>
+                    </Link>
 
                     <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
                         <img src={tags_icon} className="w-6" alt="" />
                         {(isLabelVisible) && <span className="truncate">Tags</span>}
                     </button>
 
-                    <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={watch_later_icon} className="w-6" alt="" />
-                        {(isLabelVisible) && <span className="truncate">Watch Later</span>}
-                    </button>
+                    <Link to='/playlist?p=watch_later'>
+                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                            <img src={watch_later_icon} className="w-6" alt="" />
+                            {(isLabelVisible) && <span className="truncate">Watch Later</span>}
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Settings section */}
