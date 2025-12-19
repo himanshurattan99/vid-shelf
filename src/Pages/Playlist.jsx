@@ -8,6 +8,8 @@ import { formatDuration } from '../utils'
 const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
+    // State to toggle delete confirmation modal
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     // Extract playlist ID from URL query parameters
     const [searchParams] = useSearchParams()
@@ -61,11 +63,8 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                                 {/* Dropdown menu: Remove Video option */}
                                 {(selectedVideoId === video.id) && (
                                     <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
-                                        {/* Remove video from playlist */}
-                                        <div onClick={() => {
-                                            removeVideoFromPlaylist(playlistId, video.id)
-                                            setSelectedVideoId(null)
-                                        }}
+                                        {/* Remove video from playlist (opens confirmation modal) */}
+                                        <div onClick={() => setShowDeleteModal(true)}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                         >
                                             <img src={remove_icon} className="w-4" alt="" />
@@ -78,6 +77,35 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                     </div>
                 ))}
             </div>
+
+            {/* Delete video modal */}
+            {(showDeleteModal) && (
+                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
+                    <div className="mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
+                        <h3 className="mb-5 text-lg font-medium">Delete this video?</h3>
+
+                        <div className="flex justify-center gap-5">
+                            {/* Cancel deletion */}
+                            <button onClick={() => setShowDeleteModal(false)}
+                                className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
+                            >
+                                Cancel
+                            </button>
+
+                            {/* Confirm delete and close modal */}
+                            <button onClick={() => {
+                                removeVideoFromPlaylist(playlistId, selectedVideoId)
+                                setSelectedVideoId(null)
+                                setShowDeleteModal(false)
+                            }}
+                                className="py-1 px-3 bg-red-600 hover:bg-red-700 rounded-full cursor-pointer transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

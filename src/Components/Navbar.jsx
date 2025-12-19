@@ -79,7 +79,9 @@ const Navbar = ({ onMenuClick, onImport }) => {
 
                 {/* Hidden file input for video import */}
                 <input onChange={(e) => {
-                    onImport(e.target.files)
+                    // Convert FileList to Array to preserve files after input reset
+                    const files = Array.from(e.target.files)
+                    onImport(files)
                     e.target.value = ""
                 }}
                     ref={fileInputRef}

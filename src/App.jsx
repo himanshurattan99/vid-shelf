@@ -21,6 +21,8 @@ const App = () => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   // State for sidebar mode ('contract' or 'slide')
   const [sidebarMode, setSidebarMode] = useState('contract')
+  // State for global notifications
+  const [notification, setNotification] = useState({ message: '', visible: false })
 
   const location = useLocation()
 
@@ -73,6 +75,15 @@ const App = () => {
     setSidebarExpanded(!sidebarExpanded)
   }
 
+  // Helper function to show notification
+  const showNotification = (message) => {
+    setNotification({ message, visible: true })
+    // Hide after 3 seconds
+    setTimeout(() => {
+      setNotification((prev) => ({ ...prev, visible: false }))
+    }, 3000)
+  }
+
   // Handle video import from file input
   const handleImport = async (files) => {
     if (files && files.length > 0) {
@@ -98,6 +109,9 @@ const App = () => {
 
       // Update videos state with new videos
       setVideos((prevVideos) => ({ ...prevVideos, ...newVideosMap }))
+
+      const videoCount = files.length
+      showNotification(`${videoCount} video${(videoCount !== 1) ? 's' : ''} imported successfully`)
     }
   }
 
@@ -116,6 +130,8 @@ const App = () => {
       delete updatedVideos[videoId]
       return updatedVideos
     })
+
+    showNotification('Video removed from library')
   }
 
   // Add video to playlist
@@ -128,8 +144,11 @@ const App = () => {
 
       // Check for duplicates to prevent adding the same video twice
       if (playlist.videoIds.includes(videoId)) {
+        showNotification(`Video already in ${playlist.name}!`)
         return prevPlaylists
       }
+
+      showNotification(`Added to ${playlist.name}`)
 
       // Return new state with updated playlist
       return {
@@ -159,6 +178,8 @@ const App = () => {
         }
       }
     })
+
+    showNotification('Video removed from playlist')
   }
 
   return (
@@ -180,6 +201,13 @@ const App = () => {
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
       </main>
+
+      {/* Global Notification Toast */}
+      {(notification.visible) && (
+        <div className="bg-[#333] py-2 px-3 rounded-lg text-slate-100 fixed bottom-1/20 left-1/2 -translate-x-1/2 z-10">
+          {notification.message}
+        </div>
+      )}
     </>
   )
 }
