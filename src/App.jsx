@@ -134,6 +134,26 @@ const App = () => {
     showNotification('Video removed from library')
   }
 
+  // Create a new playlist
+  const createPlaylist = (name) => {
+    // Generate ID from name: lowercase and replace spaces with underscores
+    const id = name.toLowerCase().replace(/\s+/g, '_')
+
+    // Check if playlist already exists
+    if (playlists[id]) {
+      showNotification(`Playlist '${name}' already exists`)
+      return
+    }
+
+    // Add new playlist to state
+    setPlaylists((prev) => ({
+      ...prev,
+      [id]: { id, name, videoIds: [] }
+    }))
+
+    showNotification(`Playlist '${name}' created`)
+  }
+
   // Add video to playlist
   const addVideoToPlaylist = (playlistId, videoId) => {
     setPlaylists((prevPlaylists) => {
@@ -169,6 +189,8 @@ const App = () => {
       // Safety check: if playlist doesn't exist, return previous state
       if (!playlist) return prevPlaylists
 
+      showNotification(`Video removed from ${playlist.name}`)
+
       // Return new state with video removed
       return {
         ...prevPlaylists,
@@ -178,8 +200,6 @@ const App = () => {
         }
       }
     })
-
-    showNotification('Video removed from playlist')
   }
 
   return (
@@ -196,7 +216,7 @@ const App = () => {
           <Route path='/' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
-          <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} />} />
+          <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
