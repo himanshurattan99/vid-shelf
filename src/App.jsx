@@ -154,6 +154,23 @@ const App = () => {
     showNotification(`Playlist '${name}' created`)
   }
 
+  // Remove a playlist
+  const removePlaylist = (playlistId) => {
+    // Prevent deleting Watch Later playlist
+    if (playlistId === 'watch_later') {
+      showNotification("Cannot remove 'Watch Later' playlist")
+      return
+    }
+
+    setPlaylists((prev) => {
+      const updatedPlaylists = { ...prev }
+      delete updatedPlaylists[playlistId]
+      return updatedPlaylists
+    })
+
+    showNotification(`Playlist '${playlists[playlistId].name}' removed`)
+  }
+
   // Add video to playlist
   const addVideoToPlaylist = (playlistId, videoId) => {
     setPlaylists((prevPlaylists) => {
@@ -216,7 +233,7 @@ const App = () => {
           <Route path='/' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
-          <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} />} />
+          <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>

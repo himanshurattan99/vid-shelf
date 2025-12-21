@@ -1,14 +1,22 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import create_icon from '../assets/icons/create-icon.png'
+import more_options_icon from '../assets/icons/more-options-icon.png'
+import remove_icon from '../assets/icons/remove-icon.png'
 
-const Playlists = ({ videos, playlists, createPlaylist }) => {
+const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
     // Convert playlists object to array
     const playlistsArray = Object.values(playlists)
 
-    // State for create playlist input and modal visibility
+    // State for new playlist name input
     const [newPlaylistName, setNewPlaylistName] = useState('')
+
+    // State to track which playlist's option menu is open
+    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
+    // State to toggle create playlist modal
     const [showCreateModal, setShowCreateModal] = useState(false)
+    // State to toggle delete confirmation modal
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     // Handle playlist creation
     const handleCreatePlaylist = () => {
@@ -57,6 +65,28 @@ const Playlists = ({ videos, playlists, createPlaylist }) => {
 
                             <div className="py-1 ps-2 flex justify-between items-start gap-2">
                                 <h3 className="text-sm font-medium leading-5 line-clamp-2">{playlist.name}</h3>
+
+                                <div className="relative">
+                                    {/* Toggle dropdown menu for this playlist */}
+                                    <button onClick={() => setSelectedPlaylistId((selectedPlaylistId === playlist.id) ? null : playlist.id)}
+                                        className="w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                    >
+                                        <img src={more_options_icon} alt="" />
+                                    </button>
+
+                                    {/* Dropdown menu: Remove Playlist option */}
+                                    {(selectedPlaylistId === playlist.id) && (
+                                        <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
+                                            {/* Remove playlist (opens confirmation modal) */}
+                                            <div onClick={() => setShowDeleteModal(true)}
+                                                className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
+                                            >
+                                                <img src={remove_icon} className="w-4" alt="" />
+                                                <span>Remove playlist</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )
@@ -94,6 +124,36 @@ const Playlists = ({ videos, playlists, createPlaylist }) => {
                                 className="py-1 px-3 bg-[#3ea6ff] hover:bg-[#3ea6ff]/80 disabled:opacity-50 font-medium text-black rounded-full cursor-pointer disabled:cursor-not-allowed transition-colors"
                             >
                                 Create
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete playlist modal */}
+            {(showDeleteModal) && (
+                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
+                    <div className="mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
+                        <h3 className="mb-5 text-lg font-medium">Delete this playlist?</h3>
+
+                        {/* Action buttons */}
+                        <div className="flex justify-center gap-5">
+                            {/* Cancel deletion */}
+                            <button onClick={() => setShowDeleteModal(false)}
+                                className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
+                            >
+                                Cancel
+                            </button>
+
+                            {/* Confirm delete and close modal */}
+                            <button onClick={() => {
+                                removePlaylist(selectedPlaylistId)
+                                setSelectedPlaylistId(null)
+                                setShowDeleteModal(false)
+                            }}
+                                className="py-1 px-3 bg-red-600 hover:bg-red-700 rounded-full cursor-pointer transition-colors"
+                            >
+                                Delete
                             </button>
                         </div>
                     </div>
