@@ -3,9 +3,9 @@ import { Link, useLocation } from 'react-router-dom'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
-import { formatDuration, shuffleArray } from '../utils'
+import { formatDuration } from '../utils'
 
-const Home = ({ videos, removeVideo, addVideoToPlaylist }) => {
+const Home = ({ videos, homeVideos, removeVideo, addVideoToPlaylist }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle delete confirmation modal
@@ -20,9 +20,9 @@ const Home = ({ videos, removeVideo, addVideoToPlaylist }) => {
         // Convert videos object to array
         const videosArray = Object.values(videos)
 
-        // For Home page, show random 12 videos
+        // For Home page, show pre-shuffled 12 videos (persisted across navigation)
         if (location.pathname === '/') {
-            return shuffleArray(videosArray).slice(0, 12)
+            return homeVideos || []
         }
         // For Library page, show all videos
         else if (location.pathname === '/library') {
@@ -30,17 +30,21 @@ const Home = ({ videos, removeVideo, addVideoToPlaylist }) => {
         }
 
         return []
-    }, [videos, location.pathname])
+    }, [videos, homeVideos, location.pathname])
 
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
+            <h2 className="mb-3 text-xl font-bold">
+                {(location.pathname === '/') ? 'Home' : 'Library'}
+            </h2>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
                 {displayedVideos.map((video) => (
-                    <div key={video.id} className="hover:bg-[#1e1e1e] rounded-lg cursor-pointer transition-all hover:scale-105">
+                    <div key={video.id} className="hover:bg-[#1e1e1e] rounded-lg cursor-pointer transition-colors">
                         <div className="relative">
                             {/* Link to video watch page with thumbnail card and duration overlay */}
                             <Link to={`/watch?v=${video.id}`}>
-                                <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg bg-gray-800" alt={video.name} />
+                                <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
                                 <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                     {formatDuration(video.duration)}
                                 </span>

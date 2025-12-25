@@ -1,5 +1,5 @@
 import './App.css'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
@@ -8,7 +8,7 @@ import Video from './Pages/Video'
 import Playlists from './Pages/Playlists'
 import Playlist from './Pages/Playlist'
 import Error from './Pages/Error'
-import { removeFileExtension, extractVideoId, getVideoDuration, generateThumbnail } from './utils'
+import { shuffleArray, removeFileExtension, extractVideoId, getVideoDuration, generateThumbnail } from './utils'
 
 const App = () => {
   // State for imported videos, stored as an object for O(1) access
@@ -23,6 +23,11 @@ const App = () => {
   const [sidebarMode, setSidebarMode] = useState('contract')
   // State for global notifications
   const [notification, setNotification] = useState({ message: '', visible: false })
+
+  // Memoize shuffled videos for Home page to persist order across navigation
+  const homeVideos = useMemo(() => {
+    return shuffleArray(Object.values(videos)).slice(0, 12)
+  }, [videos])
 
   const location = useLocation()
 
@@ -230,7 +235,7 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
+          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
