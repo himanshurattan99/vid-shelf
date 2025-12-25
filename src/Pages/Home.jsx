@@ -2,14 +2,17 @@ import { useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
+import playlists_icon from '../assets/icons/playlists-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
 import { formatDuration } from '../utils'
 
-const Home = ({ videos, homeVideos, removeVideo, addVideoToPlaylist }) => {
+const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    // State to toggle playlist selection modal
+    const [showPlaylistModal, setShowPlaylistModal] = useState(false)
 
     const location = useLocation()
 
@@ -40,7 +43,7 @@ const Home = ({ videos, homeVideos, removeVideo, addVideoToPlaylist }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
                 {displayedVideos.map((video) => (
-                    <div key={video.id} className="hover:bg-[#1e1e1e] rounded-lg cursor-pointer transition-colors">
+                    <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
                         <div className="relative">
                             {/* Link to video watch page with thumbnail card and duration overlay */}
                             <Link to={`/watch?v=${video.id}`}>
@@ -74,6 +77,14 @@ const Home = ({ videos, homeVideos, removeVideo, addVideoToPlaylist }) => {
                                         >
                                             <img src={watch_later_icon} className="w-4" alt="" />
                                             <span>Add to Watch Later</span>
+                                        </div>
+
+                                        {/* Add to Playlist (opens playlist selection modal) */}
+                                        <div onClick={() => setShowPlaylistModal(true)}
+                                            className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
+                                        >
+                                            <img src={playlists_icon} className="w-4" alt="" />
+                                            <span>Add to Playlist</span>
                                         </div>
 
                                         {/* Remove video (opens confirmation modal) */}
@@ -116,6 +127,47 @@ const Home = ({ videos, homeVideos, removeVideo, addVideoToPlaylist }) => {
                                 Delete
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Playlist selection modal */}
+            {(showPlaylistModal) && (
+                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
+                    <div className="w-64 mt-16 p-5 bg-[#212121] border border-white/10 rounded-xl">
+                        <h3 className="mb-3 font-semibold text-slate-100">Add to Playlist</h3>
+
+                        {/* List of playlists */}
+                        <div className="max-h-60 mb-3 overflow-y-auto">
+                            {Object.values(playlists).map((playlist) => (
+                                <div key={playlist.id}
+                                    onClick={() => {
+                                        addVideoToPlaylist(playlist.id, selectedVideoId)
+                                        setSelectedVideoId(null)
+                                        setShowPlaylistModal(false)
+                                    }}
+                                    className="py-2.5 px-3 hover:bg-[#2a2a2a] rounded-lg flex justify-between items-center cursor-pointer transition-colors"
+                                >
+                                    <div className="text-sm text-slate-200">
+                                        {playlist.name}
+                                    </div>
+                                    {/* Show playlist icon if video is already in this playlist */}
+                                    {(playlist.videoIds.includes(selectedVideoId)) && (
+                                        <img src={playlists_icon} className="w-4" alt="" />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px mb-3 bg-white/5"></div>
+
+                        {/* Cancel button */}
+                        <button onClick={() => setShowPlaylistModal(false)}
+                            className="w-full py-2 px-3 hover:bg-[#2a2a2a] rounded-lg text-sm text-slate-300 cursor-pointer transition-colors"
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </div>
             )}

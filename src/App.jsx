@@ -235,8 +235,8 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
-          <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} addVideoToPlaylist={addVideoToPlaylist} />} />
+          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} removeVideo={removeVideo} playlists={playlists} addVideoToPlaylist={addVideoToPlaylist} />} />
+          <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} playlists={playlists} addVideoToPlaylist={addVideoToPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
