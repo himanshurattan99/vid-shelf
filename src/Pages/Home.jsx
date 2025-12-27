@@ -4,6 +4,7 @@ import more_options_icon from '../assets/icons/more-options-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
+import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
 const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }) => {
@@ -79,12 +80,12 @@ const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }
                                             <span>Add to Watch Later</span>
                                         </div>
 
-                                        {/* Add to Playlist (opens playlist selection modal) */}
+                                        {/* Save to Playlist (opens playlist selection modal) */}
                                         <div onClick={() => setShowPlaylistModal(true)}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                         >
                                             <img src={playlists_icon} className="w-4" alt="" />
-                                            <span>Add to Playlist</span>
+                                            <span>Save to Playlist</span>
                                         </div>
 
                                         {/* Remove video (opens confirmation modal) */}
@@ -104,72 +105,30 @@ const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }
 
             {/* Delete video modal */}
             {(showDeleteModal) && (
-                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
-                    <div className="mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
-                        <h3 className="mb-5 text-lg font-medium">Delete this video?</h3>
-
-                        <div className="flex justify-center gap-5">
-                            {/* Cancel deletion */}
-                            <button onClick={() => setShowDeleteModal(false)}
-                                className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-
-                            {/* Confirm delete and close modal */}
-                            <button onClick={() => {
-                                removeVideo(selectedVideoId)
-                                setSelectedVideoId(null)
-                                setShowDeleteModal(false)
-                            }}
-                                className="py-1 px-3 bg-red-600 hover:bg-red-700 rounded-full cursor-pointer transition-colors"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <Modal type="delete-video"
+                    title="Delete this video?"
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={() => {
+                        removeVideo(selectedVideoId)
+                        setSelectedVideoId(null)
+                        setShowDeleteModal(false)
+                    }}
+                />
             )}
 
             {/* Playlist selection modal */}
             {(showPlaylistModal) && (
-                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
-                    <div className="w-64 mt-16 p-5 bg-[#212121] border border-white/10 rounded-xl">
-                        <h3 className="mb-3 font-semibold text-slate-100">Add to Playlist</h3>
-
-                        {/* List of playlists */}
-                        <div className="max-h-60 mb-3 overflow-y-auto">
-                            {Object.values(playlists).map((playlist) => (
-                                <div key={playlist.id}
-                                    onClick={() => {
-                                        addVideoToPlaylist(playlist.id, selectedVideoId)
-                                        setSelectedVideoId(null)
-                                        setShowPlaylistModal(false)
-                                    }}
-                                    className="py-2.5 px-3 hover:bg-[#2a2a2a] rounded-lg flex justify-between items-center cursor-pointer transition-colors"
-                                >
-                                    <div className="text-sm text-slate-200">
-                                        {playlist.name}
-                                    </div>
-                                    {/* Show playlist icon if video is already in this playlist */}
-                                    {(playlist.videoIds.includes(selectedVideoId)) && (
-                                        <img src={playlists_icon} className="w-4" alt="" />
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Divider */}
-                        <div className="h-px mb-3 bg-white/5"></div>
-
-                        {/* Cancel button */}
-                        <button onClick={() => setShowPlaylistModal(false)}
-                            className="w-full py-2 px-3 hover:bg-[#2a2a2a] rounded-lg text-sm text-slate-300 cursor-pointer transition-colors"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
+                <Modal type="save-to-playlist"
+                    title="Save to Playlist"
+                    onClose={() => setShowPlaylistModal(false)}
+                    onConfirm={(playlistId) => {
+                        addVideoToPlaylist(playlistId, selectedVideoId)
+                        setSelectedVideoId(null)
+                        setShowPlaylistModal(false)
+                    }}
+                    playlists={playlists}
+                    videoId={selectedVideoId}
+                />
             )}
         </div>
     )

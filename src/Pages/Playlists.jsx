@@ -3,13 +3,11 @@ import { Link } from 'react-router-dom'
 import create_icon from '../assets/icons/create-icon.png'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
+import Modal from '../Components/Modal'
 
 const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
     // Convert playlists object to array
     const playlistsArray = Object.values(playlists)
-
-    // State for new playlist name input
-    const [newPlaylistName, setNewPlaylistName] = useState('')
 
     // State to track which playlist's option menu is open
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
@@ -17,15 +15,6 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
     const [showCreateModal, setShowCreateModal] = useState(false)
     // State to toggle delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false)
-
-    // Handle playlist creation
-    const handleCreatePlaylist = () => {
-        if (newPlaylistName.trim()) {
-            createPlaylist(newPlaylistName)
-            setNewPlaylistName('')
-            setShowCreateModal(false)
-        }
-    }
 
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
@@ -47,7 +36,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
                     const firstVideo = videos[firstVideoId]
 
                     return (
-                        <div key={playlist.id} className="p-2 hover:bg-[#1e1e1e] rounded-lg cursor-pointer transition-all hover:scale-105">
+                        <div key={playlist.id} className="p-2 hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
                             <div className="aspect-video relative">
                                 {/* Link to playlist page */}
                                 <Link to={`/playlist?p=${playlist.id}`}>
@@ -95,69 +84,31 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
 
             {/* Create Playlist Modal */}
             {(showCreateModal) && (
-                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
-                    <div className="w-80 mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
-                        <h3 className="mb-3 text-lg font-medium text-center">New Playlist</h3>
-
-                        {/* Input for playlist name */}
-                        <input autoFocus type="text" placeholder="Playlist Name"
-                            value={newPlaylistName}
-                            onChange={(e) => setNewPlaylistName(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleCreatePlaylist()
-                            }}
-                            className="w-full mb-3 py-2 px-3 bg-[#181818] border border-white/10 focus:border-white/30 rounded outline-none text-sm"
-                        />
-
-                        {/* Action buttons */}
-                        <div className="flex justify-center gap-5">
-                            {/* Cancel creation */}
-                            <button onClick={() => setShowCreateModal(false)}
-                                className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-
-                            {/* Confirm creation */}
-                            <button onClick={handleCreatePlaylist}
-                                disabled={!newPlaylistName.trim()}
-                                className="py-1 px-3 bg-[#3ea6ff] hover:bg-[#3ea6ff]/80 disabled:opacity-50 font-medium text-black rounded-full cursor-pointer disabled:cursor-not-allowed transition-colors"
-                            >
-                                Create
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <Modal type="create-playlist"
+                    title="New Playlist"
+                    onClose={() => setShowCreateModal(false)}
+                    onConfirm={(newPlaylistName) => {
+                        if (newPlaylistName.trim()) {
+                            createPlaylist(newPlaylistName)
+                            setShowCreateModal(false)
+                        }
+                    }}
+                    playlists={playlists}
+                />
             )}
 
             {/* Delete playlist modal */}
             {(showDeleteModal) && (
-                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
-                    <div className="mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
-                        <h3 className="mb-5 text-lg font-medium">Delete this playlist?</h3>
-
-                        {/* Action buttons */}
-                        <div className="flex justify-center gap-5">
-                            {/* Cancel deletion */}
-                            <button onClick={() => setShowDeleteModal(false)}
-                                className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-
-                            {/* Confirm delete and close modal */}
-                            <button onClick={() => {
-                                removePlaylist(selectedPlaylistId)
-                                setSelectedPlaylistId(null)
-                                setShowDeleteModal(false)
-                            }}
-                                className="py-1 px-3 bg-red-600 hover:bg-red-700 rounded-full cursor-pointer transition-colors"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <Modal
+                    type="delete-playlist"
+                    title="Delete this playlist?"
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={() => {
+                        removePlaylist(selectedPlaylistId)
+                        setSelectedPlaylistId(null)
+                        setShowDeleteModal(false)
+                    }}
+                />
             )}
         </div>
     )

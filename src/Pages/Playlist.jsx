@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
 import Error from '../Pages/Error'
+import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
 const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
@@ -58,7 +59,7 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                     }
 
                     return (
-                        <div key={video.id} className="hover:bg-[#1e1e1e] rounded-lg cursor-pointer transition-colors">
+                        <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
                             <div className="relative">
                                 {/* Link to video watch page with thumbnail card and duration overlay */}
                                 <Link to={`/watch?v=${video.id}`}>
@@ -101,31 +102,15 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
 
             {/* Delete video modal */}
             {(showDeleteModal) && (
-                <div className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
-                    <div className="mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
-                        <h3 className="mb-5 text-lg font-medium">Delete this video?</h3>
-
-                        <div className="flex justify-center gap-5">
-                            {/* Cancel deletion */}
-                            <button onClick={() => setShowDeleteModal(false)}
-                                className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
-                            >
-                                Cancel
-                            </button>
-
-                            {/* Confirm delete and close modal */}
-                            <button onClick={() => {
-                                removeVideoFromPlaylist(playlistId, selectedVideoId)
-                                setSelectedVideoId(null)
-                                setShowDeleteModal(false)
-                            }}
-                                className="py-1 px-3 bg-red-600 hover:bg-red-700 rounded-full cursor-pointer transition-colors"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <Modal type="delete-video"
+                    title="Delete this video?"
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={() => {
+                        removeVideoFromPlaylist(playlistId, selectedVideoId)
+                        setSelectedVideoId(null)
+                        setShowDeleteModal(false)
+                    }}
+                />
             )}
         </div>
     )
