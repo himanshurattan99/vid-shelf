@@ -1,24 +1,28 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { formatDuration } from '../utils'
 import play_icon from '../assets/icons/play-icon.png'
 import pause_icon from '../assets/icons/pause-icon.png'
 import replay_icon from '../assets/icons/replay-icon.png'
 import volume_icon from '../assets/icons/volume-icon.png'
 import mute_icon from '../assets/icons/mute-icon.png'
-import settings_icon from '../assets/icons/settings-icon.png'
 import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
 
 const VideoPlayer = ({ video }) => {
-    // References to video and container DOM elements
+    const { url, thumbnail, duration } = video
+
+    // References to video, container, and video progress bar DOM elements
     const videoRef = useRef(null)
     const containerRef = useRef(null)
+    const progressRef = useRef(null)
 
     // Core video playback state
     const [isPlaying, setIsPlaying] = useState(false)
     const [hasEnded, setHasEnded] = useState(false)
-    const [duration, setDuration] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
+
+    // Memoize formatted duration to prevent re-calculation on every render
+    const formattedDuration = useMemo(() => formatDuration(Math.floor(duration)), [duration])
 
     // Volume and audio controls
     const [volume, setVolume] = useState(1)
@@ -54,13 +58,14 @@ const VideoPlayer = ({ video }) => {
 
     // Replay video from the beginning
     const replayVideo = () => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
-        video.currentTime = 0
+        videoElement.currentTime = 0
         setCurrentTime(0)
         setHasEnded(false)
         setIsPlaying(true)
+        setShowControls(false)
 
         // Show click icon briefly
         setShowClickIcon(true)
@@ -69,12 +74,18 @@ const VideoPlayer = ({ video }) => {
 
     // Handle progress bar changes (seeking)
     const handleProgressChange = (e) => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
         const newCurrentTime = parseFloat(e.target.value)
-        video.currentTime = newCurrentTime
+        videoElement.currentTime = newCurrentTime
         setCurrentTime(newCurrentTime)
+
+        // Update video progress bar visuals manually to stay in sync
+        if (progressRef.current) {
+            const progress = (newCurrentTime / duration) * 100
+            progressRef.current.style.background = `linear-gradient(to right, #065fd4 0%, #065fd4 ${progress}%, rgba(255, 255, 255, 0.2) ${progress}%, rgba(255, 255, 255, 0.2) 100%)`
+        }
 
         // Check if video has ended by seeking to the end
         if (newCurrentTime >= duration) {
@@ -113,13 +124,13 @@ const VideoPlayer = ({ video }) => {
         setShowPlaybackSpeedMenu(!(showPlaybackSpeedMenu))
     }
 
-    // Set video playback speed and close menu
+    // Set video playback speed
     const handlePlaybackSpeed = (speed) => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
         const newPlaybackSpeed = parseFloat(speed)
-        video.playbackRate = newPlaybackSpeed
+        videoElement.playbackRate = newPlaybackSpeed
         setPlaybackSpeed(newPlaybackSpeed)
     }
 
@@ -141,13 +152,13 @@ const VideoPlayer = ({ video }) => {
 
     // Handle keyboard shortcuts for video playback controls
     const handleVideoKeyDown = (e) => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
         // Seek to a new time position within video bounds
         const seek = (offset) => {
             const newCurrentTime = Math.min(duration, Math.max(0, currentTime + offset))
-            video.currentTime = newCurrentTime
+            videoElement.currentTime = newCurrentTime
             setCurrentTime(newCurrentTime)
 
             // Check if video has ended by seeking to the end
@@ -215,55 +226,96 @@ const VideoPlayer = ({ video }) => {
         }
     }
 
-    // Set up video event listeners for duration and time updates
+    // Set up video event listeners and drive the high-frequency progress update loop using requestAnimationFrame
     useEffect(() => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
-        // Update duration when video metadata loads
-        const updateDuration = () => setDuration(video.duration)
-        // Update current time during playback
-        const updateTime = () => setCurrentTime(video.currentTime)
+        let animationFrameId
+        // Efficiently updates the video progress bar and throttles 'currentTime' state updates
+        const updateLoop = () => {
+            if (videoElement.paused || videoElement.ended) return
+
+            const currentTime = videoElement.currentTime
+
+            // Direct DOM manipulation for smooth progress bar (60fps, no re-renders)
+            if (progressRef.current) {
+                progressRef.current.value = currentTime
+                const progress = (currentTime / duration) * 100
+                progressRef.current.style.background = `linear-gradient(to right, #065fd4 0%, #065fd4 ${progress}%, rgba(255, 255, 255, 0.2) ${progress}%, rgba(255, 255, 255, 0.2) 100%)`
+            }
+
+            // Throttle 'currentTime' state updates to 1Hz (once per second) to minimize re-renders
+            setCurrentTime((prev) => {
+                if (Math.floor(currentTime) !== Math.floor(prev)) {
+                    return currentTime
+                }
+                return prev
+            })
+
+            animationFrameId = requestAnimationFrame(updateLoop)
+        }
+
+        // Sync playing state and start the 60fps update loop
+        const onPlay = () => {
+            setIsPlaying(true) // Sync state (handles browser controls/keyboard shortcuts)
+            updateLoop()
+        }
+
+        // Sync paused state and stop the update loop
+        const onPause = () => {
+            setIsPlaying(false) // Sync state (handles browser controls/keyboard shortcuts)
+            cancelAnimationFrame(animationFrameId)
+        }
+
         // Handle video end event
         const handleVideoEnd = () => {
             setHasEnded(true)
             setIsPlaying(false)
+            setShowControls(true)
+            cancelAnimationFrame(animationFrameId)
         }
+
         // Update fullscreen state when fullscreen mode changes
         const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement)
 
-        video.addEventListener('loadedmetadata', updateDuration)
-        video.addEventListener('timeupdate', updateTime)
-        video.addEventListener('ended', handleVideoEnd)
+        // Events to trigger the update loop
+        videoElement.addEventListener('play', onPlay)
+        videoElement.addEventListener('pause', onPause)
+        videoElement.addEventListener('ended', handleVideoEnd)
         document.addEventListener('fullscreenchange', handleFullscreenChange)
 
-        // Cleanup event listeners
+        // Start update loop if video is already playing (handles component remount scenarios)
+        if (!videoElement.paused) onPlay()
+
+        // Cleanup: stop the video progress update loop and remove all the attached event listeners
         return () => {
-            video.removeEventListener('loadedmetadata', updateDuration)
-            video.removeEventListener('timeupdate', updateTime)
-            video.removeEventListener('ended', handleVideoEnd)
+            cancelAnimationFrame(animationFrameId)
+            videoElement.removeEventListener('play', onPlay)
+            videoElement.removeEventListener('pause', onPause)
+            videoElement.removeEventListener('ended', handleVideoEnd)
             document.removeEventListener('fullscreenchange', handleFullscreenChange)
         }
-    }, [])
+    }, [duration])
 
     // Handle play/pause video based on state
     useEffect(() => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
         if (isPlaying && !(showThumbnail)) {
-            video.play()
+            videoElement.play()
         } else {
-            video.pause()
+            videoElement.pause()
         }
     }, [isPlaying, showThumbnail])
 
     // Update video volume based on volume and mute state
     useEffect(() => {
-        const video = videoRef.current
-        if (!video) return
+        const videoElement = videoRef.current
+        if (!videoElement) return
 
-        video.volume = isMuted ? 0 : volume
+        videoElement.volume = (isMuted) ? 0 : volume
     }, [volume, isMuted])
 
     return (
@@ -271,11 +323,11 @@ const VideoPlayer = ({ video }) => {
             onKeyDown={handleVideoKeyDown}
             ref={containerRef}
             tabIndex={0}
-            className="outline-none relative"
+            className="rounded-xl outline-none relative overflow-hidden"
         >
             {/* Video element - always render but control visibility */}
             <video onClick={(hasEnded) ? replayVideo : togglePlay}
-                src={video.url} ref={videoRef}
+                src={url} ref={videoRef}
                 preload="metadata"
                 className={`w-full aspect-video ${(showThumbnail) ? 'hidden' : 'block'}`}
             />
@@ -283,9 +335,11 @@ const VideoPlayer = ({ video }) => {
             {/* Thumbnail overlay - conditionally rendered */}
             {(showThumbnail) && (
                 <div className="">
-                    <img src={video.thumbnail} className="w-full aspect-video lg:rounded-xl" alt="" />
+                    <img src={thumbnail} className="w-full aspect-video lg:rounded-xl" alt="" />
                     <div className="bg-black/50 lg:rounded-xl absolute inset-0">
-                        <img onClick={handleThumbnailClick} src={play_icon} className="w-1/10 sm:w-1/12 lg:w-1/16 cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform hover:scale-125 hover:rotate-360" alt="" />
+                        <button onClick={handleThumbnailClick} className="w-full h-full flex justify-center items-center cursor-pointer">
+                            <img src={play_icon} className="w-1/10 sm:w-1/12 lg:w-1/16 transition-transform hover:scale-125 hover:rotate-360" alt="Play Video" />
+                        </button>
                     </div>
                 </div>
             )}
@@ -305,10 +359,11 @@ const VideoPlayer = ({ video }) => {
                         {/* Progress bar */}
                         <div className="">
                             <input onChange={handleProgressChange} type="range"
-                                value={currentTime} min="0" max={duration} step={1 / duration}
+                                ref={progressRef}
+                                defaultValue={0} min="0" max={duration} step="any"
                                 className="w-full cursor-pointer media-slider media-slider-red"
                                 style={{
-                                    background: `linear-gradient(to right, #065fd4 0%, #065fd4 ${(currentTime / duration) * 100}%, rgba(255, 255, 255, 0.2) ${(currentTime / duration) * 100}%, rgba(255, 255, 255, 0.2) 100%)`
+                                    background: `linear-gradient(to right, #065fd4 0%, #065fd4 0%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 100%)`
                                 }}
                             />
                         </div>
@@ -323,7 +378,9 @@ const VideoPlayer = ({ video }) => {
                             {/* Volume control section */}
                             <div className="flex items-center gap-1 cursor-pointer">
                                 {/* Volume/Mute button */}
-                                <img onClick={toggleIsMuted} src={(isMuted) ? mute_icon : volume_icon} className="w-6" alt="" />
+                                <button onClick={toggleIsMuted} className="outline-none">
+                                    <img src={(isMuted) ? mute_icon : volume_icon} className="w-6" alt="" />
+                                </button>
 
                                 {/* Volume slider */}
                                 <input onChange={(e) => handleVolumeChange(e)} type="range"
@@ -337,16 +394,18 @@ const VideoPlayer = ({ video }) => {
 
                             {/* Current time and duration display */}
                             <div className="text-sm">
-                                {formatDuration(Math.floor(currentTime))} / {formatDuration(Math.floor(duration))}
+                                {formatDuration(Math.floor(currentTime))} / {formattedDuration}
                             </div>
 
                             {/* Playback speed control button */}
                             <button className="ml-auto relative">
-                                <img onClick={toggleShowPlaybackMenu}
-                                    src={settings_icon}
-                                    className="w-6 transition-transform duration-250 hover:rotate-360 cursor-pointer" alt=""
-                                />
+                                <div onClick={toggleShowPlaybackMenu}
+                                    className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded text-xs font-medium cursor-pointer transition-colors"
+                                >
+                                    {playbackSpeed}x
+                                </div>
 
+                                {/* Playback speed menu */}
                                 {(showPlaybackSpeedMenu && !(showThumbnail)) &&
                                     (
                                         <div className="bg-black/50 rounded-md overflow-hidden absolute -top-[100%] left-[50%] -translate-x-[50%] -translate-y-[100%]">
@@ -365,12 +424,15 @@ const VideoPlayer = ({ video }) => {
 
                                             {playbackSpeeds.map((speed) => {
                                                 return (
-                                                    <div onClick={() => handlePlaybackSpeed(speed)}
+                                                    <button onClick={() => {
+                                                        handlePlaybackSpeed(speed)
+                                                        setShowPlaybackSpeedMenu(false)
+                                                    }}
                                                         key={speed}
-                                                        className={`py-1 px-6 ${(playbackSpeed === speed) ? 'bg-black/50' : ''} hover:bg-black/50 text-sm cursor-pointer`}
+                                                        className={`w-full py-1 px-6 ${(playbackSpeed === speed) ? 'bg-black/50' : ''} hover:bg-black/50 text-sm cursor-pointer`}
                                                     >
                                                         {speed}
-                                                    </div>
+                                                    </button>
                                                 )
                                             })}
                                         </div>
