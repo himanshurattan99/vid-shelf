@@ -8,7 +8,7 @@ import mute_icon from '../assets/icons/mute-icon.png'
 import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
 
-const VideoPlayer = ({ video }) => {
+const VideoPlayer = ({ video, autoPlay = false, onPlayStart }) => {
     const { url, thumbnail, duration } = video
 
     // References to video, container, and video progress bar DOM elements
@@ -17,7 +17,7 @@ const VideoPlayer = ({ video }) => {
     const progressRef = useRef(null)
 
     // Core video playback state
-    const [isPlaying, setIsPlaying] = useState(false)
+    const [isPlaying, setIsPlaying] = useState(autoPlay)
     const [hasEnded, setHasEnded] = useState(false)
     const [currentTime, setCurrentTime] = useState(0)
 
@@ -33,7 +33,7 @@ const VideoPlayer = ({ video }) => {
     const playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
 
     // UI visibility and interaction states
-    const [showThumbnail, setShowThumbnail] = useState(true)
+    const [showThumbnail, setShowThumbnail] = useState(!autoPlay)
     const [showControls, setShowControls] = useState(false)
     const [showClickIcon, setShowClickIcon] = useState(false)
     const [showPlaybackSpeedMenu, setShowPlaybackSpeedMenu] = useState(false)
@@ -45,6 +45,9 @@ const VideoPlayer = ({ video }) => {
     const handleThumbnailClick = () => {
         setShowThumbnail(false)
         setIsPlaying(true)
+
+        // Notify parent component to enable autoplay for subsequent videos
+        if (onPlayStart) onPlayStart()
     }
 
     // Toggle play/pause state
@@ -318,12 +321,16 @@ const VideoPlayer = ({ video }) => {
         videoElement.volume = (isMuted) ? 0 : volume
     }, [volume, isMuted])
 
+    // Calculate video current time to initialize the progress bar correctly whenever controls re-mount on hover
+    const currentVideoTime = (videoRef.current) ? videoRef.current.currentTime : 0
+    const currentProgressPercentage = (currentVideoTime / duration) * 100
+
     return (
         <div onMouseEnter={() => setShowControls(true)} onMouseLeave={() => setShowControls(false)}
             onKeyDown={handleVideoKeyDown}
             ref={containerRef}
             tabIndex={0}
-            className="rounded-xl outline-none relative overflow-hidden"
+            className="lg:rounded-xl outline-none relative overflow-hidden"
         >
             {/* Video element - always render but control visibility */}
             <video onClick={(hasEnded) ? replayVideo : togglePlay}
@@ -355,21 +362,21 @@ const VideoPlayer = ({ video }) => {
             {/* Video controls overlay */}
             {(showControls && !(showThumbnail)) &&
                 (
-                    <div className="absolute right-0 bottom-2 left-0">
+                    <div className="bg-black/35 absolute right-0 bottom-0 left-0">
                         {/* Progress bar */}
-                        <div className="">
+                        <div className="flex items-center">
                             <input onChange={handleProgressChange} type="range"
                                 ref={progressRef}
-                                defaultValue={0} min="0" max={duration} step="any"
+                                defaultValue={currentVideoTime} min="0" max={duration} step="any"
                                 className="w-full cursor-pointer media-slider media-slider-red"
                                 style={{
-                                    background: `linear-gradient(to right, #065fd4 0%, #065fd4 0%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 100%)`
+                                    background: `linear-gradient(to right, #065fd4 0%, #065fd4 ${currentProgressPercentage}%, rgba(255, 255, 255, 0.2) ${currentProgressPercentage}%, rgba(255, 255, 255, 0.2) 100%)`
                                 }}
                             />
                         </div>
 
                         {/* Control buttons and info */}
-                        <div className="py-1 px-3 flex items-center gap-5">
+                        <div className="py-2 px-3 flex items-center gap-5">
                             {/* Play/Pause button */}
                             <button onClick={(hasEnded) ? replayVideo : togglePlay} className="w-6 cursor-pointer transition-transform hover:rotate-360">
                                 <img src={(hasEnded) ? replay_icon : ((isPlaying) ? pause_icon : play_icon)} alt="" />

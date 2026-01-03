@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
@@ -27,6 +27,9 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
     // State to toggle playlist selection modal
     const [showPlaylistModal, setShowPlaylistModal] = useState(false)
 
+    // Track if user has actively played a video in this session to enable autoplay for subsequent videos
+    const hasPlayedVideo = useRef(false)
+
     // Retrieve video object from videos map using videoId
     const video = videos[videoId]
 
@@ -48,7 +51,11 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
             {/* Main video content container */}
             <div className={`lg:w-[70%] ${(!playlistId) ? 'lg:ml-9' : ''} flex flex-col gap-2 sm:gap-3`}>
                 <div className="-mx-3 lg:mx-0 aspect-video relative">
-                    <VideoPlayer key={videoId} video={video} />
+                    <VideoPlayer key={videoId}
+                        video={video}
+                        autoPlay={hasPlayedVideo.current}
+                        onPlayStart={() => hasPlayedVideo.current = true}
+                    />
                 </div>
 
                 <div className="flex justify-between items-start">
