@@ -44,11 +44,11 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
     }
 
     return (
-        <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 flex flex-col lg:flex-row lg:justify-between gap-5 lg:gap-6 overflow-y-auto">
+        <div className="h-[92.5vh] p-3 lg:px-6 bg-[#181818] text-slate-100 flex-1 flex flex-col lg:flex-row lg:justify-between lg:items-start gap-5 lg:gap-6 overflow-y-auto">
             {/* Main video content container */}
-            <div className="lg:w-[70%] flex flex-col gap-2 sm:gap-3">
+            <div className={`lg:w-[70%] ${(!playlistId) ? 'lg:ml-9' : ''} flex flex-col gap-2 sm:gap-3`}>
                 <div className="-mx-3 lg:mx-0 aspect-video relative">
-                    <VideoPlayer video={video} />
+                    <VideoPlayer key={videoId} video={video} />
                 </div>
 
                 <div className="flex justify-between items-start">
@@ -87,7 +87,7 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
 
             {/* Playlist Videos (only shown if playlistId is present) */}
             {(playlistId) && (
-                <div className="-mx-1 lg:mx-0 py-2 lg:py-3 px-3 border border-[#3d3d3d] rounded-xl flex-1 flex flex-col gap-3">
+                <div className="lg:max-h-full -mx-1 lg:mx-0 py-2 lg:py-3 px-3 border border-[#3d3d3d] rounded-xl lg:flex-1 flex flex-col gap-3 overflow-y-auto">
                     <div className="flex items-baseline gap-3">
                         <h2 className="text-lg sm:text-xl font-medium">{playlist?.name}</h2>
                         <div className="text-sm text-slate-500">{playlist?.videoIds.length} videos</div>
@@ -96,7 +96,7 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
                     {playlistVideosArray.map((video) => {
                         return (
                             <Link key={video.id} to={`/watch?v=${video.id}&p=${playlistId}`}>
-                                <div className={`${(video.id === videoId) ? 'bg-[#212121]' : ''} hover:bg-[#212121] rounded-lg flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 cursor-pointer`}>
+                                <div className={`${(video.id === videoId) ? 'bg-[#2e2e2e]' : ''} hover:bg-[#2e2e2e] rounded-lg flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 cursor-pointer transition-colors`}>
                                     {/* Video thumbnail with duration overlay */}
                                     <div className="sm:w-[40%] aspect-video shrink-0 relative">
                                         <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt="" />
