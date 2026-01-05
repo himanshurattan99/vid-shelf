@@ -9,7 +9,7 @@ import Error from './Error'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist }) => {
+const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, updateVideoThumbnail }) => {
     const navigate = useNavigate()
 
     // Extract video ID and playlist ID from URL query parameters
@@ -60,6 +60,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                         video={video}
                         autoPlay={hasPlayedVideo.current}
                         onPlayStart={() => hasPlayedVideo.current = true}
+                        updateVideoThumbnail={updateVideoThumbnail}
                     />
                 </div>
 

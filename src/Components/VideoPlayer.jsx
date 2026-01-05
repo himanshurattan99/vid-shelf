@@ -5,10 +5,11 @@ import pause_icon from '../assets/icons/pause-icon.png'
 import replay_icon from '../assets/icons/replay-icon.png'
 import volume_icon from '../assets/icons/volume-icon.png'
 import mute_icon from '../assets/icons/mute-icon.png'
+import thumbnail_icon from '../assets/icons/thumbnail-icon.png'
 import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
 
-const VideoPlayer = ({ video, autoPlay = false, onPlayStart }) => {
+const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnail }) => {
     const { url, thumbnail, duration } = video
 
     // References to video, container, and video progress bar DOM elements
@@ -135,6 +136,27 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart }) => {
         const newPlaybackSpeed = parseFloat(speed)
         videoElement.playbackRate = newPlaybackSpeed
         setPlaybackSpeed(newPlaybackSpeed)
+    }
+
+    // Capture current frame and set as thumbnail
+    const captureThumbnail = () => {
+        const videoElement = videoRef.current
+        if (!videoElement) return
+
+        // Create a canvas to draw the frame
+        const canvas = document.createElement('canvas')
+        canvas.width = videoElement.videoWidth
+        canvas.height = videoElement.videoHeight
+
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height)
+
+        // Convert canvas to blob and update thumbnail
+        canvas.toBlob((blob) => {
+            if (blob) {
+                updateVideoThumbnail(video.id, blob)
+            }
+        }, 'image/jpeg', 0.8)
     }
 
     // Toggle fullscreen mode
@@ -404,8 +426,15 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart }) => {
                                 {formatDuration(Math.floor(currentTime))} / {formattedDuration}
                             </div>
 
+                            {/* Capture Thumbnail Button */}
+                            <button onClick={captureThumbnail} className="ml-auto relative" title="Set as Thumbnail">
+                                <div className="p-1 hover:bg-white/30 rounded-full cursor-pointer transition-colors">
+                                    <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
+                                </div>
+                            </button>
+
                             {/* Playback speed control button */}
-                            <button className="ml-auto relative">
+                            <button className="relative">
                                 <div onClick={toggleShowPlaybackMenu}
                                     className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded text-xs font-medium cursor-pointer transition-colors"
                                 >

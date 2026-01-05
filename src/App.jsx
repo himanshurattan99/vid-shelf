@@ -224,6 +224,34 @@ const App = () => {
     })
   }
 
+  // Update video thumbnail
+  const updateVideoThumbnail = (videoId, newThumbnailBlob) => {
+    setVideos((prevVideos) => {
+      const updatedVideos = { ...prevVideos }
+      const videoToUpdate = updatedVideos[videoId]
+
+      if (!videoToUpdate) return prevVideos
+
+      // Create new object URL for the new thumbnail
+      const newThumbnailUrl = URL.createObjectURL(newThumbnailBlob)
+
+      // Revoke old thumbnail URL
+      if (videoToUpdate.thumbnail) {
+        URL.revokeObjectURL(videoToUpdate.thumbnail)
+      }
+
+      // Update the video object with the new thumbnail URL
+      updatedVideos[videoId] = {
+        ...videoToUpdate,
+        thumbnail: newThumbnailUrl
+      }
+
+      return updatedVideos
+    })
+
+    showNotification('Thumbnail updated!')
+  }
+
   return (
     <>
       {/* Navbar with menu toggle and import functionality */}
@@ -237,7 +265,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} />} />
-          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
+          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} updateVideoThumbnail={updateVideoThumbnail} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
