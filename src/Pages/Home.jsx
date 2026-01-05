@@ -7,15 +7,15 @@ import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }) => {
+const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist }) => {
+    const location = useLocation()
+
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
-    // State to toggle delete confirmation modal
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
-    // State to toggle playlist selection modal
-    const [showPlaylistModal, setShowPlaylistModal] = useState(false)
-
-    const location = useLocation()
+    // State to toggle Save to Playlist modal
+    const [showSaveToPlaylistModal, setShowSaveToPlaylistModal] = useState(false)
+    // State to toggle Delete from Library confirmation modal
+    const [showDeleteFromLibraryModal, setShowDeleteFromLibraryModal] = useState(false)
 
     // Filter and sort videos based on the current route
     const displayedVideos = useMemo(() => {
@@ -66,12 +66,12 @@ const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }
                                     <img src={more_options_icon} alt="" />
                                 </button>
 
-                                {/* Dropdown menu: Watch Later & Remove Video options */}
+                                {/* Dropdown menu: Watch Later, Save to Playlist, Delete Video */}
                                 {(selectedVideoId === video.id) && (
                                     <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
                                         {/* Add video to Watch Later */}
                                         <div onClick={() => {
-                                            addVideoToPlaylist('watch_later', video.id)
+                                            saveVideoToPlaylist('watch_later', video.id)
                                             setSelectedVideoId(null)
                                         }}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
@@ -80,20 +80,20 @@ const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }
                                             <span>Add to Watch Later</span>
                                         </div>
 
-                                        {/* Save to Playlist (opens playlist selection modal) */}
-                                        <div onClick={() => setShowPlaylistModal(true)}
+                                        {/* Save to Playlist (opens Save to Playlist modal) */}
+                                        <div onClick={() => setShowSaveToPlaylistModal(true)}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                         >
                                             <img src={playlists_icon} className="w-4" alt="" />
                                             <span>Save to Playlist</span>
                                         </div>
 
-                                        {/* Remove video (opens confirmation modal) */}
-                                        <div onClick={() => setShowDeleteModal(true)}
+                                        {/* Delete video (opens Delete from Library confirmation modal) */}
+                                        <div onClick={() => setShowDeleteFromLibraryModal(true)}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                         >
                                             <img src={remove_icon} className="w-4" alt="" />
-                                            <span>Remove Video</span>
+                                            <span>Delete Video</span>
                                         </div>
                                     </div>
                                 )}
@@ -103,31 +103,31 @@ const Home = ({ videos, homeVideos, removeVideo, playlists, addVideoToPlaylist }
                 ))}
             </div>
 
-            {/* Delete video modal */}
-            {(showDeleteModal) && (
-                <Modal type="delete-video"
-                    title="Delete this video?"
-                    onClose={() => setShowDeleteModal(false)}
-                    onConfirm={() => {
-                        removeVideo(selectedVideoId)
-                        setSelectedVideoId(null)
-                        setShowDeleteModal(false)
-                    }}
-                />
-            )}
-
-            {/* Playlist selection modal */}
-            {(showPlaylistModal) && (
+            {/* Save video to Playlist modal */}
+            {(showSaveToPlaylistModal) && (
                 <Modal type="save-to-playlist"
                     title="Save to Playlist"
-                    onClose={() => setShowPlaylistModal(false)}
+                    onClose={() => setShowSaveToPlaylistModal(false)}
                     onConfirm={(playlistId) => {
-                        addVideoToPlaylist(playlistId, selectedVideoId)
+                        saveVideoToPlaylist(playlistId, selectedVideoId)
                         setSelectedVideoId(null)
-                        setShowPlaylistModal(false)
+                        setShowSaveToPlaylistModal(false)
                     }}
                     playlists={playlists}
                     videoId={selectedVideoId}
+                />
+            )}
+
+            {/* Delete video from Library modal */}
+            {(showDeleteFromLibraryModal) && (
+                <Modal type="delete-video"
+                    title="Delete from Library?"
+                    onClose={() => setShowDeleteFromLibraryModal(false)}
+                    onConfirm={() => {
+                        deleteVideo(selectedVideoId)
+                        setSelectedVideoId(null)
+                        setShowDeleteFromLibraryModal(false)
+                    }}
                 />
             )}
         </div>

@@ -120,8 +120,8 @@ const App = () => {
     }
   }
 
-  // Handle video removal
-  const removeVideo = (videoId) => {
+  // Handle video deletion from Library
+  const deleteVideo = (videoId) => {
     setVideos((prevVideos) => {
       const updatedVideos = { ...prevVideos }
       const videoToRemove = updatedVideos[videoId]
@@ -136,7 +136,7 @@ const App = () => {
       return updatedVideos
     })
 
-    showNotification('Video removed from library')
+    showNotification('Video deleted from library')
   }
 
   // Create a new playlist
@@ -177,7 +177,7 @@ const App = () => {
   }
 
   // Add video to playlist
-  const addVideoToPlaylist = (playlistId, videoId) => {
+  const saveVideoToPlaylist = (playlistId, videoId) => {
     setPlaylists((prevPlaylists) => {
       const playlist = prevPlaylists[playlistId]
 
@@ -235,9 +235,9 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} removeVideo={removeVideo} playlists={playlists} addVideoToPlaylist={addVideoToPlaylist} />} />
-          <Route path='/library' element={<Home videos={videos} removeVideo={removeVideo} playlists={playlists} addVideoToPlaylist={addVideoToPlaylist} />} />
-          <Route path='/watch' element={<Video videos={videos} removeVideo={removeVideo} playlists={playlists} addVideoToPlaylist={addVideoToPlaylist} />} />
+          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} />} />
+          <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} />} />
+          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />

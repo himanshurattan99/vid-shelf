@@ -3,16 +3,25 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
+import more_options_icon from '../assets/icons/more-options-icon.png'
 import VideoPlayer from '../Components/VideoPlayer'
 import Error from './Error'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
+const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist }) => {
+    const navigate = useNavigate()
+
     // Extract video ID and playlist ID from URL query parameters
     const [searchParams] = useSearchParams()
     const videoId = searchParams.get('v')
     const playlistId = searchParams.get('p') // Only present when opened from a playlist, not Home/Library
+
+    // Retrieve video object from videos map using videoId
+    const video = videos[videoId]
+
+    // Track if user has actively played a video in this session to enable autoplay for subsequent videos
+    const hasPlayedVideo = useRef(false)
 
     // Retrieve playlist object from playlists map using playlistId
     const playlist = playlists[playlistId]
@@ -20,18 +29,14 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
     const videoIds = playlist?.videoIds || []
     const playlistVideosArray = videoIds.map((videoId) => videos[videoId] || { id: videoId })
 
-    const navigate = useNavigate()
-
-    // State to toggle delete confirmation modal
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
-    // State to toggle playlist selection modal
-    const [showPlaylistModal, setShowPlaylistModal] = useState(false)
-
-    // Track if user has actively played a video in this session to enable autoplay for subsequent videos
-    const hasPlayedVideo = useRef(false)
-
-    // Retrieve video object from videos map using videoId
-    const video = videos[videoId]
+    // State to toggle Delete from Library confirmation modal
+    const [showDeleteFromLibraryModal, setShowDeleteFromLibraryModal] = useState(false)
+    // State to toggle Save to Playlist modal
+    const [showSaveToPlaylistModal, setShowSaveToPlaylistModal] = useState(false)
+    // State to track which video's option menu is open in the playlist sidebar
+    const [selectedPlaylistVideoId, setSelectedPlaylistVideoId] = useState(null)
+    // State to toggle Remove from Playlist confirmation modal
+    const [showRemoveFromPlaylistModal, setShowRemoveFromPlaylistModal] = useState(false)
 
     // Show Error page when video ID parameter is missing
     if (!videoId) {
@@ -59,33 +64,33 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
                 </div>
 
                 <div className="flex justify-between items-start">
-                    {/* Video title */}
+                    {/* Video name */}
                     <h2 className="text-lg sm:text-xl font-medium">{video?.name}</h2>
 
-                    {/* Video action buttons: Watch Later, Add to Playlist, Remove Video */}
+                    {/* Video action buttons: Watch Later, Save to Playlist, Delete Video */}
                     <div className="flex gap-5">
                         {/* Add video to Watch Later */}
-                        <button onClick={() => addVideoToPlaylist('watch_later', video.id)}
+                        <button onClick={() => saveVideoToPlaylist('watch_later', video.id)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Add to Watch Later"
                         >
                             <img src={watch_later_icon} className="w-6" alt="Watch Later" />
                         </button>
 
-                        {/* Save to Playlist (opens playlist selection modal) */}
-                        <button onClick={() => setShowPlaylistModal(true)}
+                        {/* Save to Playlist (opens Save to Playlist modal) */}
+                        <button onClick={() => setShowSaveToPlaylistModal(true)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Save to Playlist"
                         >
                             <img src={playlists_icon} className="w-6" alt="Playlists" />
                         </button>
 
-                        {/* Remove video (opens confirmation modal) */}
-                        <button onClick={() => setShowDeleteModal(true)}
+                        {/* Delete video (opens Delete from Library confirmation modal) */}
+                        <button onClick={() => setShowDeleteFromLibraryModal(true)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
-                            title="Remove Video"
+                            title="Delete Video"
                         >
-                            <img src={remove_icon} className="w-6" alt="Remove Video" />
+                            <img src={remove_icon} className="w-6" alt="Delete Video" />
                         </button>
                     </div>
                 </div>
@@ -94,7 +99,7 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
 
             {/* Playlist Videos (only shown if playlistId is present) */}
             {(playlistId) && (
-                <div className="lg:max-h-full -mx-1 lg:mx-0 py-2 lg:py-3 px-3 border border-[#3d3d3d] rounded-xl lg:flex-1 flex flex-col gap-3 overflow-y-auto">
+                <div className="lg:max-h-full -mx-1 lg:mx-0 py-2 lg:py-3 px-3 border border-[#3d3d3d] rounded-xl lg:flex-1 flex flex-col gap-1 overflow-y-auto">
                     <div className="flex items-baseline gap-3">
                         <h2 className="text-lg sm:text-xl font-medium">{playlist?.name}</h2>
                         <div className="text-sm text-slate-500">{playlist?.videoIds.length} videos</div>
@@ -103,7 +108,7 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
                     {playlistVideosArray.map((video) => {
                         return (
                             <Link key={video.id} to={`/watch?v=${video.id}&p=${playlistId}`}>
-                                <div className={`${(video.id === videoId) ? 'bg-[#2e2e2e]' : ''} hover:bg-[#2e2e2e] rounded-lg flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 cursor-pointer transition-colors`}>
+                                <div className={`p-2 ${(video.id === videoId) ? 'bg-[#2e2e2e]' : ''} hover:bg-[#2e2e2e] rounded-lg flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 cursor-pointer transition-colors`}>
                                     {/* Video thumbnail with duration overlay */}
                                     <div className="sm:w-[40%] aspect-video shrink-0 relative">
                                         <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt="" />
@@ -112,8 +117,40 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
                                         </span>
                                     </div>
 
-                                    {/* Video name */}
-                                    <h3 className="md:mt-2 lg:mt-1 lg:text-sm font-medium line-clamp-2">{video.name}</h3>
+                                    <div className="flex-1 flex justify-between">
+                                        {/* Video name */}
+                                        <h3 className="lg:text-sm font-medium line-clamp-2">{video.name}</h3>
+
+                                        <div className="relative">
+                                            {/* Toggle dropdown menu for this video */}
+                                            <button onClick={(e) => {
+                                                e.preventDefault()
+                                                e.stopPropagation()
+                                                setSelectedPlaylistVideoId((selectedPlaylistVideoId === video.id) ? null : video.id)
+                                            }}
+                                                className="w-5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                            >
+                                                <img src={more_options_icon} alt="" />
+                                            </button>
+
+                                            {/* Dropdown menu: Remove Video option */}
+                                            {(selectedPlaylistVideoId === video.id) && (
+                                                <div className="w-max py-2 bg-[#282828] rounded-md border border-white/20 text-xs absolute top-full right-0 z-10 whitespace-nowrap">
+                                                    {/* Remove video from playlist (opens confirmation modal) */}
+                                                    <div onClick={(e) => {
+                                                        e.preventDefault()
+                                                        e.stopPropagation()
+                                                        setShowRemoveFromPlaylistModal(true)
+                                                    }}
+                                                        className="px-2 py-1 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-1"
+                                                    >
+                                                        <img src={remove_icon} className="w-4" alt="" />
+                                                        <span>Remove from {playlist.name}</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </Link>
                         )
@@ -121,30 +158,47 @@ const Video = ({ videos, removeVideo, playlists, addVideoToPlaylist }) => {
                 </div>
             )}
 
-            {/* Delete video modal */}
-            {(showDeleteModal) && (
+            {/* Delete video from Library modal */}
+            {(showDeleteFromLibraryModal) && (
                 <Modal type="delete-video"
-                    title="Delete this video?"
-                    onClose={() => setShowDeleteModal(false)}
+                    title="Delete from Library?"
+                    onClose={() => setShowDeleteFromLibraryModal(false)}
                     onConfirm={() => {
-                        removeVideo(videoId)
-                        setShowDeleteModal(false)
+                        deleteVideo(videoId)
+                        setShowDeleteFromLibraryModal(false)
                         navigate('/') // Redirect to Home page after deletion
                     }}
                 />
             )}
 
-            {/* Playlist selection modal */}
-            {(showPlaylistModal) && (
+            {/* Save video to Playlist modal */}
+            {(showSaveToPlaylistModal) && (
                 <Modal type="save-to-playlist"
                     title="Save to Playlist"
-                    onClose={() => setShowPlaylistModal(false)}
+                    onClose={() => setShowSaveToPlaylistModal(false)}
                     onConfirm={(playlistId) => {
-                        addVideoToPlaylist(playlistId, videoId)
-                        setShowPlaylistModal(false)
+                        saveVideoToPlaylist(playlistId, videoId)
+                        setShowSaveToPlaylistModal(false)
                     }}
                     playlists={playlists}
                     videoId={videoId}
+                />
+            )}
+
+            {/* Remove video from Playlist modal */}
+            {(showRemoveFromPlaylistModal) && (
+                <Modal type="delete-video"
+                    title="Remove from playlist?"
+                    onClose={() => setShowRemoveFromPlaylistModal(false)}
+                    onConfirm={() => {
+                        removeVideoFromPlaylist(playlistId, selectedPlaylistVideoId)
+                        setSelectedPlaylistVideoId(null)
+                        setShowRemoveFromPlaylistModal(false)
+                        // Redirect to Playlist page if the currently playing video is removed
+                        if (selectedPlaylistVideoId === videoId) {
+                            navigate(`/playlist?p=${playlistId}`)
+                        }
+                    }}
                 />
             )}
         </div >
