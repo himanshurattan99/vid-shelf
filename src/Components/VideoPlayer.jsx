@@ -17,6 +17,8 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     const videoRef = useRef(null)
     const containerRef = useRef(null)
     const progressRef = useRef(null)
+    // Reference to track if video was playing before capturing thumbnail
+    const wasPlayingRef = useRef(false)
 
     // Core video playback state
     const [isPlaying, setIsPlaying] = useState(autoPlay)
@@ -429,7 +431,19 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                             </div>
 
                             {/* Capture Thumbnail Button */}
-                            <button onClick={() => setShowThumbnailConfirmation(true)}
+                            <button onClick={() => {
+                                const videoElement = videoRef.current
+                                if (!videoElement) return
+
+                                // Store current playing state and pause video
+                                wasPlayingRef.current = !videoElement.paused
+                                if (!videoElement.paused) {
+                                    videoElement.pause()
+                                    setIsPlaying(false)
+                                }
+
+                                setShowThumbnailConfirmation(true)
+                            }}
                                 className="ml-auto p-1 hover:bg-white/30 rounded-full cursor-pointer relative transition-colors" title="Set as Thumbnail"
                             >
                                 <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
@@ -489,10 +503,28 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
             {(showThumbnailConfirmation) && (
                 <Modal type="confirm-action"
                     title="Update video thumbnail to current frame?"
-                    onClose={() => setShowThumbnailConfirmation(false)}
+                    onClose={() => {
+                        setShowThumbnailConfirmation(false)
+                        // Resume video if it was playing before capture
+                        if (wasPlayingRef.current) {
+                            const videoElement = videoRef.current
+                            if (videoElement) {
+                                videoElement.play()
+                                setIsPlaying(true)
+                            }
+                        }
+                    }}
                     onConfirm={() => {
                         captureThumbnail()
                         setShowThumbnailConfirmation(false)
+                        // Resume video if it was playing before capture
+                        if (wasPlayingRef.current) {
+                            const videoElement = videoRef.current
+                            if (videoElement) {
+                                videoElement.play()
+                                setIsPlaying(true)
+                            }
+                        }
                     }}
                 />
             )}
