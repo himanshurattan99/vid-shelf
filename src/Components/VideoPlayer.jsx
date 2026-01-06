@@ -8,6 +8,7 @@ import mute_icon from '../assets/icons/mute-icon.png'
 import thumbnail_icon from '../assets/icons/thumbnail-icon.png'
 import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
+import Modal from './Modal'
 
 const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnail }) => {
     const { url, thumbnail, duration } = video
@@ -37,6 +38,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     const [showThumbnail, setShowThumbnail] = useState(!autoPlay)
     const [showControls, setShowControls] = useState(false)
     const [showClickIcon, setShowClickIcon] = useState(false)
+    const [showThumbnailConfirmation, setShowThumbnailConfirmation] = useState(false)
     const [showPlaybackSpeedMenu, setShowPlaybackSpeedMenu] = useState(false)
 
     // Fullscreen mode state
@@ -427,10 +429,10 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                             </div>
 
                             {/* Capture Thumbnail Button */}
-                            <button onClick={captureThumbnail} className="ml-auto relative" title="Set as Thumbnail">
-                                <div className="p-1 hover:bg-white/30 rounded-full cursor-pointer transition-colors">
-                                    <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
-                                </div>
+                            <button onClick={() => setShowThumbnailConfirmation(true)}
+                                className="ml-auto p-1 hover:bg-white/30 rounded-full cursor-pointer relative transition-colors" title="Set as Thumbnail"
+                            >
+                                <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
                             </button>
 
                             {/* Playback speed control button */}
@@ -482,6 +484,18 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                         </div>
                     </div>
                 )}
+
+            {/* Thumbnail Update Confirmation Modal */}
+            {(showThumbnailConfirmation) && (
+                <Modal type="confirm-action"
+                    title="Update video thumbnail to current frame?"
+                    onClose={() => setShowThumbnailConfirmation(false)}
+                    onConfirm={() => {
+                        captureThumbnail()
+                        setShowThumbnailConfirmation(false)
+                    }}
+                />
+            )}
         </div>
     )
 }

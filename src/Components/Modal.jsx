@@ -121,6 +121,34 @@ const Modal = ({ type, title, onClose, onConfirm, playlists, videoId }) => {
         )
     }
 
+    // Render Action Confirmation Modal
+    if (type === 'confirm-action') {
+        return (
+            <div onClick={onClose} className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
+                <div onClick={handleContentClick} className="w-80 mt-6 sm:mt-16 p-5 bg-[#212121] border border-white/10 rounded-lg">
+                    <h3 className="mb-3 text-lg font-medium text-center">{title}</h3>
+
+                    {/* Action buttons */}
+                    <div className="flex justify-center gap-5">
+                        {/* Cancel action */}
+                        <button onClick={onClose}
+                            className="py-1 px-3 hover:bg-[#3c3c3c] rounded-full cursor-pointer transition-colors"
+                        >
+                            Cancel
+                        </button>
+
+                        {/* Confirm action */}
+                        <button onClick={onConfirm}
+                            className="py-1 px-3 bg-[#3ea6ff] hover:bg-[#3ea6ff]/80 font-medium text-black rounded-full cursor-pointer transition-colors"
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return null
 }
 
