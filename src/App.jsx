@@ -15,6 +15,7 @@ const App = () => {
   const [videos, setVideos] = useState({})
   // State for playlists
   const [playlists, setPlaylists] = useState({
+    favourites: { id: 'favourites', name: 'Favourites', videoIds: [] },
     watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] }
   })
   // State for sidebar expansion (expanded/collapsed)
@@ -161,9 +162,9 @@ const App = () => {
 
   // Remove a playlist
   const removePlaylist = (playlistId) => {
-    // Prevent deleting Watch Later playlist
-    if (playlistId === 'watch_later') {
-      showNotification("Cannot remove 'Watch Later' playlist")
+    // Prevent deleting Favourites and Watch Later playlist
+    if (playlistId === 'favourites' || playlistId === 'watch_later') {
+      showNotification(`Cannot remove ${playlists[playlistId].name} playlist`)
       return
     }
 

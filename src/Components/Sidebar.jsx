@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import home_icon from '../assets/icons/home-icon.png'
 import library_icon from '../assets/icons/library-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
-import tags_icon from '../assets/icons/tags-icon.png'
+import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import settings_icon from '../assets/icons/settings-icon.png'
 
@@ -33,7 +33,7 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                     </Link>
                 </div>
 
-                {/* Playlists, Tags and Watch Later section */}
+                {/* Playlists, Favourites and Watch Later section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
                     <Link to='/playlists'>
                         <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
@@ -42,10 +42,12 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                         </button>
                     </Link>
 
-                    <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={tags_icon} className="w-6" alt="" />
-                        {(isLabelVisible) && <span className="truncate">Tags</span>}
-                    </button>
+                    <Link to={`/playlist?p=favourites`}>
+                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                            <img src={favourites_icon} className="w-6" alt="" />
+                            {(isLabelVisible) && <span className="truncate">Favourites</span>}
+                        </button>
+                    </Link>
 
                     <Link to='/playlist?p=watch_later'>
                         <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>

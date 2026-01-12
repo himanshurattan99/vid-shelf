@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
+import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
@@ -68,11 +69,19 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                     {/* Video name */}
                     <h2 className="text-lg sm:text-xl font-medium">{video?.name}</h2>
 
-                    {/* Video action buttons: Watch Later, Save to Playlist, Delete Video */}
+                    {/* Video action buttons: Favourites, Watch Later, Save to Playlist, Delete Video */}
                     <div className="flex gap-5">
+                        {/* Add video to Favourites */}
+                        <button onClick={() => saveVideoToPlaylist('favourites', video.id)}
+                            className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(playlists['favourites']?.videoIds?.includes(video.id)) ? 'border border-gray-500' : ''}`}
+                            title="Add to Favourites"
+                        >
+                            <img src={favourites_icon} className="w-6" alt="Favourites" />
+                        </button>
+
                         {/* Add video to Watch Later */}
                         <button onClick={() => saveVideoToPlaylist('watch_later', video.id)}
-                            className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
+                            className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(playlists['watch_later']?.videoIds?.includes(video.id)) ? 'border border-gray-500' : ''}`}
                             title="Add to Watch Later"
                         >
                             <img src={watch_later_icon} className="w-6" alt="Watch Later" />
