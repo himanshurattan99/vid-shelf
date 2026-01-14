@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
+import subtitles_icon from '../assets/icons/subtitles-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import VideoPlayer from '../Components/VideoPlayer'
@@ -10,7 +11,7 @@ import Error from './Error'
 import Modal from '../Components/Modal'
 import { isVideoInPlaylist, formatDuration } from '../utils'
 
-const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, updateVideoThumbnail }) => {
+const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, updateVideoThumbnail, addVideoSubtitles }) => {
     const navigate = useNavigate()
 
     // Extract video ID and playlist ID from URL query parameters
@@ -23,6 +24,8 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
     // Track if user has actively played a video in this session to enable autoplay for subsequent videos
     const hasPlayedVideo = useRef(false)
+    // Reference to the hidden subtitles file input element
+    const subtitlesInputRef = useRef(null)
 
     // Retrieve playlist object from playlists map using playlistId
     const playlist = playlists[playlistId]
@@ -105,6 +108,24 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                             title="Save/Remove from playlist"
                         >
                             <img src={playlists_icon} className="w-6" alt="Playlists" />
+                        </button>
+
+                        {/* Hidden file input for importing subtitles */}
+                        <input onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                addVideoSubtitles(videoId, e.target.files[0])
+                            }
+                        }}
+                            ref={subtitlesInputRef}
+                            type="file" accept=".vtt"
+                            className="hidden"
+                        />
+                        {/* Add subtitles button */}
+                        <button onClick={() => subtitlesInputRef.current.click()}
+                            className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
+                            title="Add Subtitles"
+                        >
+                            <img src={subtitles_icon} className="w-6" alt="Subtitles" />
                         </button>
 
                         {/* Delete video (opens Delete from Library confirmation modal) */}

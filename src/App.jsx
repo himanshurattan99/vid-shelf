@@ -72,6 +72,9 @@ const App = () => {
         if (video.thumbnail) {
           URL.revokeObjectURL(video.thumbnail)
         }
+        if (video.subtitles) {
+          URL.revokeObjectURL(video.subtitles.src)
+        }
       })
     }
   }, [])
@@ -253,6 +256,37 @@ const App = () => {
     showNotification('Thumbnail updated!')
   }
 
+  // Add subtitles to video
+  const addVideoSubtitles = (videoId, file) => {
+    setVideos((prevVideos) => {
+      const updatedVideos = { ...prevVideos }
+      const videoToUpdate = updatedVideos[videoId]
+
+      if (!videoToUpdate) return prevVideos
+
+      // Create new object URL for the new subtitles file
+      const subtitlesUrl = URL.createObjectURL(file)
+
+      // Revoke old subtitles URL if it exists
+      if (videoToUpdate.subtitles) {
+        URL.revokeObjectURL(videoToUpdate.subtitles.src)
+      }
+
+      // Update the video object with the new subtitles URL
+      updatedVideos[videoId] = {
+        ...videoToUpdate,
+        subtitles: {
+          name: file.name,
+          src: subtitlesUrl,
+        }
+      }
+
+      return updatedVideos
+    })
+
+    showNotification('Subtitles added successfully')
+  }
+
   return (
     <>
       {/* Navbar with menu toggle and import functionality */}
@@ -266,7 +300,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
-          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} updateVideoThumbnail={updateVideoThumbnail} />} />
+          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />

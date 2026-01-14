@@ -6,6 +6,7 @@ import replay_icon from '../assets/icons/replay-icon.png'
 import volume_icon from '../assets/icons/volume-icon.png'
 import mute_icon from '../assets/icons/mute-icon.png'
 import thumbnail_icon from '../assets/icons/thumbnail-icon.png'
+import subtitles_icon from '../assets/icons/subtitles-icon.png'
 import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
 import Modal from './Modal'
@@ -41,6 +42,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     const [showControls, setShowControls] = useState(false)
     const [showClickIcon, setShowClickIcon] = useState(false)
     const [showThumbnailConfirmation, setShowThumbnailConfirmation] = useState(false)
+    const [showSubtitles, setShowSubtitles] = useState(true)
     const [showPlaybackSpeedMenu, setShowPlaybackSpeedMenu] = useState(false)
 
     // Fullscreen mode state
@@ -125,6 +127,16 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
         if (newVolume > 0 && isMuted) {
             setIsMuted(false)
         }
+    }
+
+    // Toggle subtitles
+    const toggleSubtitles = () => {
+        const videoElement = videoRef.current
+        if (!videoElement || !videoElement.textTracks[0]) return
+
+        const newMode = !showSubtitles
+        videoElement.textTracks[0].mode = (newMode) ? 'showing' : 'hidden'
+        setShowSubtitles(newMode)
     }
 
     // Toggle playback speed menu visibility
@@ -363,7 +375,15 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                 src={url} ref={videoRef}
                 preload="metadata"
                 className={`w-full aspect-video ${(showThumbnail) ? 'hidden' : 'block'}`}
-            />
+            >
+                {(video.subtitles) && (
+                    <track src={video.subtitles.src}
+                        kind="captions"
+                        label={video.subtitles.name}
+                        default
+                    />
+                )}
+            </video>
 
             {/* Thumbnail overlay - conditionally rendered */}
             {(showThumbnail) && (
@@ -448,6 +468,16 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                             >
                                 <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
                             </button>
+
+                            {/* Toggle subtitles button */}
+                            {(video.subtitles) && (
+                                <button onClick={toggleSubtitles}
+                                    className={`p-1 ${(showSubtitles) ? 'bg-white/30' : 'hover:bg-white/30'} rounded-full cursor-pointer relative transition-colors`}
+                                    title="Toggle Subtitles"
+                                >
+                                    <img src={subtitles_icon} className="w-6" alt="Subtitles" />
+                                </button>
+                            )}
 
                             {/* Playback speed control button */}
                             <button className="relative">
