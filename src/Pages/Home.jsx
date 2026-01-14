@@ -5,15 +5,15 @@ import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
-import { formatDuration } from '../utils'
+import { formatDuration, isVideoInPlaylist } from '../utils'
 
-const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist }) => {
+const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist }) => {
     const location = useLocation()
 
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
-    // State to toggle Save to Playlist modal
-    const [showSaveToPlaylistModal, setShowSaveToPlaylistModal] = useState(false)
+    // State to toggle Playlist Selector modal
+    const [showPlaylistSelectorModal, setShowPlaylistSelectorModal] = useState(false)
     // State to toggle Delete from Library confirmation modal
     const [showDeleteFromLibraryModal, setShowDeleteFromLibraryModal] = useState(false)
 
@@ -66,26 +66,32 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist 
                                     <img src={more_options_icon} alt="" />
                                 </button>
 
-                                {/* Dropdown menu: Watch Later, Save to Playlist, Delete Video */}
+                                {/* Dropdown menu: Watch Later, Save/Remove from Playlist, Delete Video */}
                                 {(selectedVideoId === video.id) && (
                                     <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
-                                        {/* Add video to Watch Later */}
+                                        {/* Add/Remove video to Watch Later */}
                                         <div onClick={() => {
-                                            saveVideoToPlaylist('watch_later', video.id)
+                                            if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
+                                                removeVideoFromPlaylist('watch_later', video.id)
+                                            } else {
+                                                saveVideoToPlaylist('watch_later', video.id)
+                                            }
                                             setSelectedVideoId(null)
                                         }}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                         >
                                             <img src={watch_later_icon} className="w-4" alt="" />
-                                            <span>Add to Watch Later</span>
+                                            <span>
+                                                {(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'Remove from Watch Later' : 'Add to Watch Later'}
+                                            </span>
                                         </div>
 
-                                        {/* Save to Playlist (opens Save to Playlist modal) */}
-                                        <div onClick={() => setShowSaveToPlaylistModal(true)}
+                                        {/* Save/Remove from Playlist (opens Playlist Selector modal) */}
+                                        <div onClick={() => setShowPlaylistSelectorModal(true)}
                                             className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                         >
                                             <img src={playlists_icon} className="w-4" alt="" />
-                                            <span>Save to Playlist</span>
+                                            <span>Select Playlist</span>
                                         </div>
 
                                         {/* Delete video (opens Delete from Library confirmation modal) */}
@@ -103,15 +109,17 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist 
                 ))}
             </div>
 
-            {/* Save video to Playlist modal */}
-            {(showSaveToPlaylistModal) && (
-                <Modal type="save-to-playlist"
-                    title="Save to Playlist"
-                    onClose={() => setShowSaveToPlaylistModal(false)}
+            {/* Save/Remove video via Playlist Selector modal */}
+            {(showPlaylistSelectorModal) && (
+                <Modal type="playlist-selector"
+                    title="Select Playlist"
+                    onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
-                        saveVideoToPlaylist(playlistId, selectedVideoId)
-                        setSelectedVideoId(null)
-                        setShowSaveToPlaylistModal(false)
+                        if (isVideoInPlaylist(selectedVideoId, playlistId, playlists)) {
+                            removeVideoFromPlaylist(playlistId, selectedVideoId)
+                        } else {
+                            saveVideoToPlaylist(playlistId, selectedVideoId)
+                        }
                     }}
                     playlists={playlists}
                     videoId={selectedVideoId}

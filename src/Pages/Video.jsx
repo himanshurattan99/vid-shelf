@@ -8,7 +8,7 @@ import more_options_icon from '../assets/icons/more-options-icon.png'
 import VideoPlayer from '../Components/VideoPlayer'
 import Error from './Error'
 import Modal from '../Components/Modal'
-import { formatDuration } from '../utils'
+import { isVideoInPlaylist, formatDuration } from '../utils'
 
 const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, updateVideoThumbnail }) => {
     const navigate = useNavigate()
@@ -32,8 +32,8 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
     // State to toggle Delete from Library confirmation modal
     const [showDeleteFromLibraryModal, setShowDeleteFromLibraryModal] = useState(false)
-    // State to toggle Save to Playlist modal
-    const [showSaveToPlaylistModal, setShowSaveToPlaylistModal] = useState(false)
+    // State to toggle Playlist Selector modal
+    const [showPlaylistSelectorModal, setShowPlaylistSelectorModal] = useState(false)
     // State to track which video's option menu is open in the playlist sidebar
     const [selectedPlaylistVideoId, setSelectedPlaylistVideoId] = useState(null)
     // State to toggle Remove from Playlist confirmation modal
@@ -69,28 +69,40 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                     {/* Video name */}
                     <h2 className="text-lg sm:text-xl font-medium">{video?.name}</h2>
 
-                    {/* Video action buttons: Favourites, Watch Later, Save to Playlist, Delete Video */}
+                    {/* Video action buttons: Favourites, Watch Later, Save/Remove from Playlist, Delete Video */}
                     <div className="flex gap-5">
-                        {/* Add video to Favourites */}
-                        <button onClick={() => saveVideoToPlaylist('favourites', video.id)}
-                            className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(playlists['favourites']?.videoIds?.includes(video.id)) ? 'border border-gray-500' : ''}`}
-                            title="Add to Favourites"
+                        {/* Add/Remove video to Favourites */}
+                        <button onClick={() => {
+                            if (isVideoInPlaylist(video.id, 'favourites', playlists)) {
+                                removeVideoFromPlaylist('favourites', video.id)
+                            } else {
+                                saveVideoToPlaylist('favourites', video.id)
+                            }
+                        }}
+                            className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'favourites', playlists)) ? 'border border-gray-500' : ''}`}
+                            title={(isVideoInPlaylist(video.id, 'favourites', playlists)) ? "Remove from Favourites" : "Add to Favourites"}
                         >
                             <img src={favourites_icon} className="w-6" alt="Favourites" />
                         </button>
 
-                        {/* Add video to Watch Later */}
-                        <button onClick={() => saveVideoToPlaylist('watch_later', video.id)}
-                            className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(playlists['watch_later']?.videoIds?.includes(video.id)) ? 'border border-gray-500' : ''}`}
-                            title="Add to Watch Later"
+                        {/* Add/Remove video to Watch Later */}
+                        <button onClick={() => {
+                            if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
+                                removeVideoFromPlaylist('watch_later', video.id)
+                            } else {
+                                saveVideoToPlaylist('watch_later', video.id)
+                            }
+                        }}
+                            className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'border border-gray-500' : ''}`}
+                            title={(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? "Remove from Watch Later" : "Add to Watch Later"}
                         >
                             <img src={watch_later_icon} className="w-6" alt="Watch Later" />
                         </button>
 
-                        {/* Save to Playlist (opens Save to Playlist modal) */}
-                        <button onClick={() => setShowSaveToPlaylistModal(true)}
+                        {/* Save/Remove from Playlist (opens Playlist Selector modal) */}
+                        <button onClick={() => setShowPlaylistSelectorModal(true)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
-                            title="Save to Playlist"
+                            title="Save/Remove from playlist"
                         >
                             <img src={playlists_icon} className="w-6" alt="Playlists" />
                         </button>
@@ -181,14 +193,17 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                 />
             )}
 
-            {/* Save video to Playlist modal */}
-            {(showSaveToPlaylistModal) && (
-                <Modal type="save-to-playlist"
-                    title="Save to Playlist"
-                    onClose={() => setShowSaveToPlaylistModal(false)}
+            {/* Save/Remove video via Playlist Selector modal */}
+            {(showPlaylistSelectorModal) && (
+                <Modal type="playlist-selector"
+                    title="Select Playlist"
+                    onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
-                        saveVideoToPlaylist(playlistId, videoId)
-                        setShowSaveToPlaylistModal(false)
+                        if (isVideoInPlaylist(videoId, playlistId, playlists)) {
+                            removeVideoFromPlaylist(playlistId, videoId)
+                        } else {
+                            saveVideoToPlaylist(playlistId, videoId)
+                        }
                     }}
                     playlists={playlists}
                     videoId={videoId}

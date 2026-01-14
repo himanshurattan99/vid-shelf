@@ -74,3 +74,8 @@ export const generateThumbnail = (videoUrl) => {
         }
     })
 }
+
+// Helper function to check if a video is in a specific playlist
+export const isVideoInPlaylist = (videoId, playlistId, playlists) => {
+    return playlists[playlistId]?.videoIds?.includes(videoId)
+}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import playlists_icon from '../assets/icons/playlists-icon.png'
+import { isVideoInPlaylist } from '../utils'
 
 const Modal = ({ type, title, onClose, onConfirm, playlists, videoId }) => {
     // State for new playlist name input
@@ -37,12 +38,12 @@ const Modal = ({ type, title, onClose, onConfirm, playlists, videoId }) => {
         )
     }
 
-    // Render Save to Playlist Modal
-    if (type === 'save-to-playlist') {
+    // Render Playlist Selector Modal
+    if (type === 'playlist-selector') {
         return (
             <div onClick={onClose} className="bg-black/50 flex justify-center items-start absolute inset-0 z-10">
                 <div onClick={handleContentClick} className="w-64 mt-16 p-5 bg-[#212121] border border-white/10 rounded-xl">
-                    <h3 className="mb-3 font-semibold text-slate-100">Save to Playlist</h3>
+                    <h3 className="mb-3 font-semibold text-slate-100">{title}</h3>
 
                     {/* List of playlists */}
                     <div className="max-h-60 mb-3 overflow-y-auto">
@@ -55,7 +56,7 @@ const Modal = ({ type, title, onClose, onConfirm, playlists, videoId }) => {
                                     {playlist.name}
                                 </div>
                                 {/* Show playlist icon if video is already in this playlist */}
-                                {(playlist.videoIds.includes(videoId)) && (
+                                {(isVideoInPlaylist(videoId, playlist.id, playlists)) && (
                                     <img src={playlists_icon} className="w-4" alt="" />
                                 )}
                             </div>
@@ -65,11 +66,11 @@ const Modal = ({ type, title, onClose, onConfirm, playlists, videoId }) => {
                     {/* Divider */}
                     <div className="h-px mb-3 bg-white/5"></div>
 
-                    {/* Cancel button */}
+                    {/* Close button */}
                     <button onClick={onClose}
                         className="w-full py-2 px-3 hover:bg-[#2a2a2a] rounded-lg text-sm text-slate-300 cursor-pointer transition-colors"
                     >
-                        Cancel
+                        Close
                     </button>
                 </div>
             </div>
