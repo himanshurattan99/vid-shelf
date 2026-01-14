@@ -8,7 +8,7 @@ import Video from './Pages/Video'
 import Playlists from './Pages/Playlists'
 import Playlist from './Pages/Playlist'
 import Error from './Pages/Error'
-import { shuffleArray, removeFileExtension, extractVideoId, getVideoDuration, generateThumbnail } from './utils'
+import { shuffleArray, removeFileExtension, generateId, getVideoDuration, generateThumbnail } from './utils'
 
 const App = () => {
   // State for imported videos, stored as an object for O(1) access
@@ -100,7 +100,7 @@ const App = () => {
 
       for (const file of files) {
         const videoUrl = URL.createObjectURL(file)
-        const videoId = extractVideoId(videoUrl)
+        const videoId = generateId()
         const duration = await getVideoDuration(videoUrl)
         const thumbnail = await generateThumbnail(videoUrl)
 

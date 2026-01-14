@@ -3,9 +3,9 @@ export const removeFileExtension = (fileName) => {
     return fileName.replace(/\.[^/.]+$/, "")
 }
 
-// Helper function to extract unique video ID from blob URL
-export const extractVideoId = (videoUrl) => {
-    return videoUrl.split("/").pop()
+// Helper function to generate a random ID
+export const generateId = (length = 7) => {
+    return Math.random().toString(36).substring(2, 2 + length)
 }
 
 // Helper function to get video duration
