@@ -42,7 +42,8 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     const [showControls, setShowControls] = useState(false)
     const [showClickIcon, setShowClickIcon] = useState(false)
     const [showThumbnailConfirmation, setShowThumbnailConfirmation] = useState(false)
-    const [showSubtitles, setShowSubtitles] = useState(true)
+    const [showSubtitlesMenu, setShowSubtitlesMenu] = useState(false)
+    const [selectedSubtitlesIndex, setSelectedSubtitlesIndex] = useState(-1) // -1 for off
     const [showPlaybackSpeedMenu, setShowPlaybackSpeedMenu] = useState(false)
 
     // Fullscreen mode state
@@ -130,13 +131,27 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     }
 
     // Toggle subtitles
-    const toggleSubtitles = () => {
-        const videoElement = videoRef.current
-        if (!videoElement || !videoElement.textTracks[0]) return
+    const toggleSubtitlesMenu = () => {
+        setShowSubtitlesMenu(!showSubtitlesMenu)
+    }
 
-        const newMode = !showSubtitles
-        videoElement.textTracks[0].mode = (newMode) ? 'showing' : 'hidden'
-        setShowSubtitles(newMode)
+    // Handle subtitles selection
+    const handleSubtitlesSelect = (index) => {
+        const videoElement = videoRef.current
+        if (!videoElement) return
+
+        const tracks = videoElement.textTracks
+        // Turn off all tracks first
+        for (let i = 0; i < tracks.length; i++) {
+            tracks[i].mode = 'hidden'
+        }
+        // Enable the selected track if a valid index is provided
+        if (index >= 0 && tracks[index]) {
+            tracks[index].mode = 'showing'
+        }
+
+        setSelectedSubtitlesIndex(index)
+        setShowSubtitlesMenu(false)
     }
 
     // Toggle playback speed menu visibility
@@ -377,11 +392,13 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                 className={`w-full aspect-video ${(showThumbnail) ? 'hidden' : 'block'}`}
             >
                 {(video.subtitles) && (
-                    <track src={video.subtitles.src}
-                        kind="captions"
-                        label={video.subtitles.name}
-                        default
-                    />
+                    (video.subtitles).map((subtitle, index) => (
+                        <track key={index} src={subtitle.src}
+                            kind="captions"
+                            label={subtitle.name}
+                            default={index === 0}
+                        />
+                    ))
                 )}
             </video>
 
@@ -469,14 +486,33 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                                 <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
                             </button>
 
-                            {/* Toggle subtitles button */}
-                            {(video.subtitles) && (
-                                <button onClick={toggleSubtitles}
-                                    className={`p-1 ${(showSubtitles) ? 'bg-white/30' : 'hover:bg-white/30'} rounded-full cursor-pointer relative transition-colors`}
-                                    title="Toggle Subtitles"
-                                >
-                                    <img src={subtitles_icon} className="w-6" alt="Subtitles" />
-                                </button>
+                            {/* Subtitles Menu */}
+                            {(video.subtitles && video.subtitles.length > 0) && (
+                                <div className="relative">
+                                    <button onClick={toggleSubtitlesMenu}
+                                        className={`p-1 ${(selectedSubtitlesIndex !== -1) ? 'bg-white/30' : 'hover:bg-white/30'} rounded-full cursor-pointer relative transition-colors`}
+                                        title="Subtitles"
+                                    >
+                                        <img src={subtitles_icon} className="w-6" alt="Subtitles" />
+                                    </button>
+
+                                    {(showSubtitlesMenu && !showThumbnail) && (
+                                        <div className="min-w-30 py-1 bg-black/70 rounded-md overflow-hidden absolute bottom-[140%] left-[50%] -translate-x-[50%]">
+                                            <button onClick={() => handleSubtitlesSelect(-1)}
+                                                className={`w-full py-1 px-4 hover:bg-white/10 text-sm text-left ${(selectedSubtitlesIndex === -1) ? 'text-blue-400' : ''} cursor-pointer`}
+                                            >
+                                                Off
+                                            </button>
+                                            {(video.subtitles).map((sub, index) => (
+                                                <button key={index} onClick={() => handleSubtitlesSelect(index)}
+                                                    className={`w-full py-1 px-4 hover:bg-white/10 text-sm text-left ${(selectedSubtitlesIndex === index) ? 'text-blue-400' : ''} cursor-pointer`}
+                                                >
+                                                    {sub.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             )}
 
                             {/* Playback speed control button */}

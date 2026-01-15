@@ -73,7 +73,7 @@ const App = () => {
           URL.revokeObjectURL(video.thumbnail)
         }
         if (video.subtitles) {
-          URL.revokeObjectURL(video.subtitles.src)
+          video.subtitles.forEach((sub) => URL.revokeObjectURL(sub.src))
         }
       })
     }
@@ -112,7 +112,8 @@ const App = () => {
           type: file.type,
           size: file.size,
           duration: duration,
-          thumbnail: thumbnail
+          thumbnail: thumbnail,
+          subtitles: []
         }
       }
 
@@ -134,6 +135,9 @@ const App = () => {
       if (videoToRemove) {
         if (videoToRemove.url) URL.revokeObjectURL(videoToRemove.url)
         if (videoToRemove.thumbnail) URL.revokeObjectURL(videoToRemove.thumbnail)
+        if (videoToRemove.subtitles) {
+          videoToRemove.subtitles.forEach((sub) => URL.revokeObjectURL(sub.src))
+        }
       }
 
       delete updatedVideos[videoId]
@@ -266,19 +270,15 @@ const App = () => {
 
       // Create new object URL for the new subtitles file
       const subtitlesUrl = URL.createObjectURL(file)
-
-      // Revoke old subtitles URL if it exists
-      if (videoToUpdate.subtitles) {
-        URL.revokeObjectURL(videoToUpdate.subtitles.src)
+      const newSubtitles = {
+        name: file.name,
+        src: subtitlesUrl
       }
 
-      // Update the video object with the new subtitles URL
+      // Update the video object with the new subtitles array
       updatedVideos[videoId] = {
         ...videoToUpdate,
-        subtitles: {
-          name: file.name,
-          src: subtitlesUrl,
-        }
+        subtitles: [...videoToUpdate.subtitles, newSubtitles]
       }
 
       return updatedVideos
