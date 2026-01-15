@@ -486,9 +486,10 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                                 <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
                             </button>
 
-                            {/* Subtitles Menu */}
+                            {/* Subtitles Menu Control */}
                             {(video.subtitles && video.subtitles.length > 0) && (
                                 <div className="relative">
+                                    {/* Subtitles Menu Toggle Button */}
                                     <button onClick={toggleSubtitlesMenu}
                                         className={`p-1 ${(selectedSubtitlesIndex !== -1) ? 'bg-white/30' : 'hover:bg-white/30'} rounded-full cursor-pointer relative transition-colors`}
                                         title="Subtitles"
@@ -496,8 +497,10 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                                         <img src={subtitles_icon} className="w-6" alt="Subtitles" />
                                     </button>
 
+                                    {/* Subtitles Menu */}
                                     {(showSubtitlesMenu && !showThumbnail) && (
                                         <div className="min-w-30 py-1 bg-black/70 rounded-md overflow-hidden absolute bottom-[140%] left-[50%] -translate-x-[50%]">
+                                            {/* Subtitles Menu Options */}
                                             <button onClick={() => handleSubtitlesSelect(-1)}
                                                 className={`w-full py-1 px-4 hover:bg-white/10 text-sm text-left ${(selectedSubtitlesIndex === -1) ? 'text-blue-400' : ''} cursor-pointer`}
                                             >
@@ -515,31 +518,33 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                                 </div>
                             )}
 
-                            {/* Playback speed control button */}
-                            <button className="relative">
-                                <div onClick={toggleShowPlaybackMenu}
-                                    className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded text-xs font-medium cursor-pointer transition-colors"
+                            {/* Playback Speed Control */}
+                            <div className="relative">
+                                {/* Playback Speed Menu Toggle Button */}
+                                <button onClick={toggleShowPlaybackMenu}
+                                    className="w-9 py-1 bg-white/20 hover:bg-white/30 rounded text-xs font-medium cursor-pointer transition-colors text-center"
                                 >
                                     {playbackSpeed}x
-                                </div>
+                                </button>
 
-                                {/* Playback speed menu */}
+                                {/* Playback Speed Menu */}
                                 {(showPlaybackSpeedMenu && !(showThumbnail)) &&
                                     (
-                                        <div className="bg-black/50 rounded-md overflow-hidden absolute -top-[100%] left-[50%] -translate-x-[50%] -translate-y-[100%]">
-                                            {/* Playback speed slider */}
-                                            <div className="py-1 px-2">
-                                                <div className="">{playbackSpeed}x</div>
+                                        <div className="min-w-30 p-1 bg-black/70 rounded-md overflow-hidden absolute bottom-[180%] left-[50%] -translate-x-[50%]">
+                                            {/* Playback Speed Slider */}
+                                            <div className="mb-1 pt-2 pb-3 px-3 hover:bg-white/10 rounded-sm flex flex-col gap-2">
+                                                <div className="text-sm text-center">{playbackSpeed}x</div>
 
                                                 <input onChange={(e) => handlePlaybackSpeed(e.target.value)} type="range"
                                                     value={playbackSpeed} min="0.05" max="2" step="0.05"
-                                                    className="w-21 cursor-pointer media-slider media-slider-white"
+                                                    className="w-full cursor-pointer media-slider media-slider-white"
                                                     style={{
                                                         background: `linear-gradient(to right, #ffffff 0%, #ffffff ${((playbackSpeed) / 2) * 100}%, rgba(255, 255, 255, 0.2) ${((playbackSpeed) / 2) * 100}%, rgba(255, 255, 255, 0.2) 100%)`
                                                     }}
                                                 />
                                             </div>
 
+                                            {/* Playback Speed Menu Options */}
                                             {playbackSpeeds.map((speed) => {
                                                 return (
                                                     <button onClick={() => {
@@ -547,15 +552,15 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                                                         setShowPlaybackSpeedMenu(false)
                                                     }}
                                                         key={speed}
-                                                        className={`w-full py-1 px-6 ${(playbackSpeed === speed) ? 'bg-black/50' : ''} hover:bg-black/50 text-sm cursor-pointer`}
+                                                        className={`w-full py-1 px-3 hover:bg-white/10 rounded-sm text-sm text-left ${(playbackSpeed === speed) ? 'text-blue-400' : ''} cursor-pointer`}
                                                     >
-                                                        {speed}
+                                                        {speed}x
                                                     </button>
                                                 )
                                             })}
                                         </div>
                                     )}
-                            </button>
+                            </div>
 
                             {/* Toggle fullscreen button */}
                             <button onClick={toggleFullscreen} className="cursor-pointer">
