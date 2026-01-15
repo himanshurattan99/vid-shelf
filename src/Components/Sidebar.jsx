@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import home_icon from '../assets/icons/home-icon.png'
 import library_icon from '../assets/icons/library-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
@@ -7,10 +7,13 @@ import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import settings_icon from '../assets/icons/settings-icon.png'
 
 const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
-    // Show labels when sidebar is expanded
-    const isLabelVisible = isExpanded
+    // Show labels when sidebar is expanded or in 'slide' mode
+    const isLabelVisible = isExpanded || (mode === 'slide')
     // Check if sidebar is in 'slide' mode (overlay) or 'contract' mode (static)
     const isSlidingMode = (mode === 'slide')
+
+    const location = useLocation()
+    const currentPath = location.pathname + location.search
 
     return (
         <>
@@ -19,14 +22,14 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                 {/* Home, Playlists and Library section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
                     <Link to={`/`}>
-                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                        <button className={`w-full p-2 ${(currentPath === '/') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                             <img src={home_icon} className="w-6" alt="" />
                             {(isLabelVisible) && <span className="truncate">Home</span>}
                         </button>
                     </Link>
 
                     <Link to={`/library`}>
-                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                        <button className={`w-full p-2 ${(currentPath === '/library') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                             <img src={library_icon} className="w-6" alt="" />
                             {(isLabelVisible) && <span className="truncate">Library</span>}
                         </button>
@@ -36,21 +39,21 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                 {/* Playlists, Favourites and Watch Later section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
                     <Link to='/playlists'>
-                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                        <button className={`w-full p-2 ${(currentPath === '/playlists') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                             <img src={playlists_icon} className="w-6" alt="" />
                             {(isLabelVisible) && <span className="truncate">Playlists</span>}
                         </button>
                     </Link>
 
                     <Link to={`/playlist?p=favourites`}>
-                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                        <button className={`w-full p-2 ${(currentPath === '/playlist?p=favourites') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                             <img src={favourites_icon} className="w-6" alt="" />
                             {(isLabelVisible) && <span className="truncate">Favourites</span>}
                         </button>
                     </Link>
 
                     <Link to='/playlist?p=watch_later'>
-                        <button className={`w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer`}>
+                        <button className={`w-full p-2 ${(currentPath === '/playlist?p=watch_later') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                             <img src={watch_later_icon} className="w-6" alt="" />
                             {(isLabelVisible) && <span className="truncate">Watch Later</span>}
                         </button>
@@ -59,7 +62,7 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
 
                 {/* Settings section */}
                 <div className="py-3">
-                    <button className="w-full p-2 hover:bg-[#3c3c3c] rounded-md flex gap-6 cursor-pointer">
+                    <button className="w-full p-2 hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer">
                         <img src={settings_icon} className="w-6" alt="" />
                         {(isLabelVisible) && <span className="truncate">Settings</span>}
                     </button>
