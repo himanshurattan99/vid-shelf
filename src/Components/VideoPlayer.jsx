@@ -389,7 +389,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
             <video onClick={(hasEnded) ? replayVideo : togglePlay}
                 src={url} ref={videoRef}
                 preload="metadata"
-                className={`w-full aspect-video ${(showThumbnail) ? 'hidden' : 'block'}`}
+                className={`w-full aspect-video ${(showThumbnail) ? 'hidden' : 'block'} ${(showControls) ? 'controls-visible' : ''}`}
             >
                 {(video.subtitles) && (
                     (video.subtitles).map((subtitle, index) => (
