@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
@@ -11,7 +11,7 @@ import Error from './Error'
 import Modal from '../Components/Modal'
 import { isVideoInPlaylist, formatDuration } from '../utils'
 
-const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, updateVideoThumbnail, addVideoSubtitles }) => {
+const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, addVideoToHistory, updateVideoThumbnail, addVideoSubtitles, updateVideoProgress }) => {
     const navigate = useNavigate()
 
     // Extract video ID and playlist ID from URL query parameters
@@ -21,6 +21,13 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
     // Retrieve video object from videos map using videoId
     const video = videos[videoId]
+
+    // Add video to Watch History when loaded
+    useEffect(() => {
+        if (videoId && video) {
+            addVideoToHistory(videoId)
+        }
+    }, [videoId])
 
     // Track if user has actively played a video in this session to enable autoplay for subsequent videos
     const hasPlayedVideo = useRef(false)
@@ -65,6 +72,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                         autoPlay={hasPlayedVideo.current}
                         onPlayStart={() => hasPlayedVideo.current = true}
                         updateVideoThumbnail={updateVideoThumbnail}
+                        updateVideoProgress={updateVideoProgress}
                     />
                 </div>
 

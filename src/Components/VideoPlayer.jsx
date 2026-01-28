@@ -11,8 +11,8 @@ import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
 import Modal from './Modal'
 
-const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnail }) => {
-    const { url, thumbnail, duration } = video
+const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnail, updateVideoProgress }) => {
+    const { url, thumbnail, duration, progress } = video
 
     // References to video, container, and video progress bar DOM elements
     const videoRef = useRef(null)
@@ -24,7 +24,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     // Core video playback state
     const [isPlaying, setIsPlaying] = useState(autoPlay)
     const [hasEnded, setHasEnded] = useState(false)
-    const [currentTime, setCurrentTime] = useState(0)
+    const [currentTime, setCurrentTime] = useState(progress || 0)
 
     // Memoize formatted duration to prevent re-calculation on every render
     const formattedDuration = useMemo(() => formatDuration(Math.floor(duration)), [duration])
@@ -301,6 +301,11 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                 progressRef.current.style.background = `linear-gradient(to right, #065fd4 0%, #065fd4 ${progress}%, rgba(255, 255, 255, 0.2) ${progress}%, rgba(255, 255, 255, 0.2) 100%)`
             }
 
+            // Update video progress in parent component (throttled to 1Hz)
+            if (updateVideoProgress && Math.floor(currentTime) % 1 === 0) {
+                updateVideoProgress(video.id, currentTime)
+            }
+
             // Throttle 'currentTime' state updates to 1Hz (once per second) to minimize re-renders
             setCurrentTime((prev) => {
                 if (Math.floor(currentTime) !== Math.floor(prev)) {
@@ -343,6 +348,11 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
 
         // Start update loop if video is already playing (handles component remount scenarios)
         if (!videoElement.paused) onPlay()
+
+        // Resume playback position if saved progress exists and we haven't reached end
+        if (progress && progress < duration) {
+            videoElement.currentTime = progress
+        }
 
         // Cleanup: stop the video progress update loop and remove all the attached event listeners
         return () => {

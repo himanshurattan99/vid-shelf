@@ -16,7 +16,8 @@ const App = () => {
   // State for playlists
   const [playlists, setPlaylists] = useState({
     favourites: { id: 'favourites', name: 'Favourites', videoIds: [] },
-    watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] }
+    watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] },
+    history: { id: 'history', name: 'History', videoIds: [] }
   })
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
@@ -232,6 +233,31 @@ const App = () => {
     })
   }
 
+  // Add video to Watch History (LIFO, max 100 video IDs)
+  const addVideoToHistory = (videoId) => {
+    setPlaylists((prev) => {
+      // Create new list without the video (if it was already there)
+      const newHistoryIds = prev.history.videoIds.filter((id) => id !== videoId)
+
+      // Add video to the front
+      newHistoryIds.unshift(videoId)
+
+      // Limit to 100 video IDs
+      if (newHistoryIds.length > 100) {
+        newHistoryIds.length = 100
+      }
+
+      // Return new state with updated Watch History playlist
+      return {
+        ...prev,
+        history: {
+          ...prev.history,
+          videoIds: newHistoryIds
+        }
+      }
+    })
+  }
+
   // Update video thumbnail
   const updateVideoThumbnail = (videoId, newThumbnailBlob) => {
     setVideos((prevVideos) => {
@@ -287,6 +313,23 @@ const App = () => {
     showNotification('Subtitles added successfully')
   }
 
+  // Update video progress (time viewed)
+  const updateVideoProgress = (videoId, currentTime) => {
+    setVideos((prevVideos) => {
+      const updatedVideos = { ...prevVideos }
+      const videoToUpdate = updatedVideos[videoId]
+
+      if (!videoToUpdate) return prevVideos
+
+      updatedVideos[videoId] = {
+        ...videoToUpdate,
+        progress: currentTime
+      }
+
+      return updatedVideos
+    })
+  }
+
   return (
     <>
       {/* Navbar with menu toggle and import functionality */}
@@ -300,7 +343,7 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
-          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} />} />
+          <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
