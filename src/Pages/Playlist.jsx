@@ -60,13 +60,17 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
 
                     return (
                         <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
-                            <div className="relative">
+                            <div className="rounded-lg relative overflow-hidden">
                                 {/* Link to video watch page with thumbnail card and duration overlay */}
                                 <Link to={`/watch?v=${video.id}&p=${playlistId}`}>
                                     <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
                                     <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                         {formatDuration(video.duration)}
                                     </span>
+                                    {/* Progress Bar Overlay */}
+                                    {(video.progress > 0) && (
+                                        <div className="h-1 bg-[#007fff] rounded-bl-lg rounded-tr-lg rounded-br-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                    )}
                                 </Link>
                             </div>
 

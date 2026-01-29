@@ -45,13 +45,17 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist,
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
                 {displayedVideos.map((video) => (
                     <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
-                        <div className="relative">
+                        <div className="rounded-lg relative overflow-hidden">
                             {/* Link to video watch page with thumbnail card and duration overlay */}
                             <Link to={`/watch?v=${video.id}`}>
                                 <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
                                 <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                     {formatDuration(video.duration)}
                                 </span>
+                                {/* Progress Bar Overlay */}
+                                {(video.progress > 0) && (
+                                    <div className="h-1 bg-[#007fff] rounded-bl-lg rounded-tr-lg rounded-br-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                )}
                             </Link>
                         </div>
 

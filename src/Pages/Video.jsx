@@ -22,10 +22,18 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
     // Retrieve video object from videos map using videoId
     const video = videos[videoId]
 
-    // Add video to Watch History when loaded
+    // Add video to Watch History when loaded (after 5 seconds delay)
     useEffect(() => {
+        let historyTimeout
         if (videoId && video) {
-            addVideoToHistory(videoId)
+            historyTimeout = setTimeout(() => {
+                addVideoToHistory(videoId)
+            }, 5000)
+        }
+
+        // Cleanup: Clear timeout if user navigates away before 5 seconds
+        return () => {
+            if (historyTimeout) clearTimeout(historyTimeout)
         }
     }, [videoId])
 
@@ -161,11 +169,15 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                             <Link key={video.id} to={`/watch?v=${video.id}&p=${playlistId}`}>
                                 <div className={`p-2 ${(video.id === videoId) ? 'bg-[#2e2e2e]' : ''} hover:bg-[#2e2e2e] rounded-lg flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 cursor-pointer transition-colors`}>
                                     {/* Video thumbnail with duration overlay */}
-                                    <div className="sm:w-[40%] aspect-video shrink-0 relative">
+                                    <div className="sm:w-[40%] aspect-video rounded-lg shrink-0 relative overflow-hidden">
                                         <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt="" />
                                         <span className="px-1 bg-black opacity-75 rounded text-sm lg:text-xs text-white absolute bottom-1 right-1">
                                             {formatDuration(video.duration)}
                                         </span>
+                                        {/* Progress Bar Overlay */}
+                                        {(video.progress > 0) && (
+                                            <div className="h-1 bg-[#007fff] rounded-bl-lg rounded-tr-lg rounded-br-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                        )}
                                     </div>
 
                                     <div className="flex-1 flex justify-between">
