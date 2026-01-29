@@ -301,11 +301,6 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
                 progressRef.current.style.background = `linear-gradient(to right, #065fd4 0%, #065fd4 ${progress}%, rgba(255, 255, 255, 0.2) ${progress}%, rgba(255, 255, 255, 0.2) 100%)`
             }
 
-            // Update video progress in parent component (throttled to 1Hz)
-            if (updateVideoProgress && Math.floor(currentTime) % 1 === 0) {
-                updateVideoProgress(video.id, currentTime)
-            }
-
             // Throttle 'currentTime' state updates to 1Hz (once per second) to minimize re-renders
             setCurrentTime((prev) => {
                 if (Math.floor(currentTime) !== Math.floor(prev)) {
@@ -361,8 +356,13 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
             videoElement.removeEventListener('pause', onPause)
             videoElement.removeEventListener('ended', handleVideoEnd)
             document.removeEventListener('fullscreenchange', handleFullscreenChange)
+
+            // Save current video progress when component unmounts or video changes
+            if (updateVideoProgress) {
+                updateVideoProgress(video.id, videoElement.currentTime)
+            }
         }
-    }, [duration])
+    }, [video.id])
 
     // Handle play/pause video based on state
     useEffect(() => {
