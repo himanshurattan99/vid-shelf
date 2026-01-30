@@ -11,7 +11,7 @@ import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
 import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
 import Modal from './Modal'
 
-const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnail, updateVideoProgress }) => {
+const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, updateVideoThumbnail, updateVideoProgress }) => {
     const { url, thumbnail, duration, progress } = video
 
     // References to video, container, and video progress bar DOM elements
@@ -20,6 +20,10 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
     const progressRef = useRef(null)
     // Reference to track if video was playing before capturing thumbnail
     const wasPlayingRef = useRef(false)
+    // Reference to track start time of the session (after first play)
+    const startTimeRef = useRef(null)
+    // Reference to track if the video has actually been played
+    const hasPlayedRef = useRef(autoPlay)
 
     // Core video playback state
     const [isPlaying, setIsPlaying] = useState(autoPlay)
@@ -357,8 +361,13 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
             videoElement.removeEventListener('ended', handleVideoEnd)
             document.removeEventListener('fullscreenchange', handleFullscreenChange)
 
-            // Save current video progress when component unmounts or video changes
-            if (updateVideoProgress) {
+            // Calculate how long the user stayed on this video session
+            const sessionDuration = (startTimeRef.current) ? Date.now() - startTimeRef.current : 0
+            // Add to Watch History and save progress only if:
+            // 1. User stayed for more than 5 seconds (avoids accidental clicks)
+            // 2. Video was actually played (avoids idle visits)
+            if (sessionDuration > 5000 && hasPlayedRef.current) {
+                addVideoToHistory(video.id)
                 updateVideoProgress(video.id, videoElement.currentTime)
             }
         }
@@ -371,6 +380,11 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, updateVideoThumbnai
 
         if (isPlaying && !(showThumbnail)) {
             videoElement.play()
+            // Start session timer on first play
+            if (!startTimeRef.current) {
+                startTimeRef.current = Date.now()
+            }
+            hasPlayedRef.current = true
         } else {
             videoElement.pause()
         }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useSearchParams, useNavigate, Link } from 'react-router-dom'
 import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
@@ -21,21 +21,6 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
     // Retrieve video object from videos map using videoId
     const video = videos[videoId]
-
-    // Add video to Watch History when loaded (after 5 seconds delay)
-    useEffect(() => {
-        let historyTimeout
-        if (videoId && video) {
-            historyTimeout = setTimeout(() => {
-                addVideoToHistory(videoId)
-            }, 5000)
-        }
-
-        // Cleanup: Clear timeout if user navigates away before 5 seconds
-        return () => {
-            if (historyTimeout) clearTimeout(historyTimeout)
-        }
-    }, [videoId])
 
     // Track if user has actively played a video in this session to enable autoplay for subsequent videos
     const hasPlayedVideo = useRef(false)
@@ -79,6 +64,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                         video={video}
                         autoPlay={hasPlayedVideo.current}
                         onPlayStart={() => hasPlayedVideo.current = true}
+                        addVideoToHistory={addVideoToHistory}
                         updateVideoThumbnail={updateVideoThumbnail}
                         updateVideoProgress={updateVideoProgress}
                     />
@@ -176,7 +162,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                                         </span>
                                         {/* Progress Bar Overlay */}
                                         {(video.progress > 0) && (
-                                            <div className="h-1 bg-[#007fff] rounded-bl-lg rounded-tr-lg rounded-br-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                            <div className="h-1 bg-[#007fff] rounded-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
                                         )}
                                     </div>
 
