@@ -7,6 +7,7 @@ import Home from './Pages/Home'
 import Video from './Pages/Video'
 import Playlists from './Pages/Playlists'
 import Playlist from './Pages/Playlist'
+import Search from './Pages/Search'
 import Error from './Pages/Error'
 import { shuffleArray, removeFileExtension, generateId, getVideoDuration, generateThumbnail } from './utils'
 
@@ -347,6 +348,7 @@ const App = () => {
           <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
+          <Route path='/search' element={<Search videos={videos} sidebarExpanded={sidebarExpanded} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
 

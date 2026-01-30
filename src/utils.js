@@ -79,3 +79,27 @@ export const generateThumbnail = (videoUrl) => {
 export const isVideoInPlaylist = (videoId, playlistId, playlists) => {
     return playlists[playlistId]?.videoIds?.includes(videoId)
 }
+
+// Helper function to normalize text (lowercase and trim)
+export const normalizeText = (text) => {
+    return (text) ? text.toString().toLowerCase().trim() : ""
+}
+
+// Helper function to search videos based on name tokens
+export const searchVideos = ({ videos, searchQuery }) => {
+    // Normalize and split search query into individual words (tokens)
+    const normalizedSearchInput = normalizeText(searchQuery)
+    const searchTokens = normalizedSearchInput.split(/\s+/).filter((token) => token.length > 0)
+
+    // Filter videos that match any search token in the name
+    const searchResults = Object.fromEntries(
+        Object.entries(videos).filter(([, video]) => {
+            const normalizedName = normalizeText(video.name)
+
+            // Check if at least one token matches the name
+            return searchTokens.some((token) => normalizedName.includes(token))
+        })
+    )
+
+    return searchResults
+}

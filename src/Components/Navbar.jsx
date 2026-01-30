@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import menu_icon from '../assets/icons/menu-icon.png'
 import vidshelf_logo from '../assets/logos/vidshelf-logo.png'
 import search_icon from '../assets/icons/search-icon.png'
@@ -11,6 +11,10 @@ import profile_icon from '../assets/icons/profile-icon.png'
 const Navbar = ({ onMenuClick, onImport }) => {
     // State to track search bar expansion on mobile screens
     const [searchBarExpanded, setSearchBarExpanded] = useState(false)
+    // State to store the search query
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const navigate = useNavigate()
 
     // Ref for the hidden file input element
     const fileInputRef = useRef(null)
@@ -18,6 +22,14 @@ const Navbar = ({ onMenuClick, onImport }) => {
     // Toggles the search bar visibility state for mobile screens
     const toggleSearchBar = () => {
         setSearchBarExpanded(!(searchBarExpanded))
+    }
+
+    // Navigates to the search page when the user presses Enter
+    const handleSearch = (e) => {
+        if (e.key === 'Enter' && searchQuery.trim()) {
+            navigate(`/search?q=${searchQuery}`)
+            setSearchBarExpanded(false)
+        }
     }
 
     return (
@@ -39,7 +51,13 @@ const Navbar = ({ onMenuClick, onImport }) => {
             <div className="hidden sm:w-1/2 lg:w-2/5 sm:flex sm:items-center sm:gap-3 lg:gap-5">
                 {/* Search input field */}
                 <div className="w-full py-2 px-4 border border-[#3d3d3d] focus-within:border-[#007fff] rounded-3xl flex items-center gap-2">
-                    <input placeholder="Search" type="text" className="w-full outline-none text-slate-100" />
+                    <input
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleSearch}
+                        value={searchQuery}
+                        type="text" placeholder="Search"
+                        className="w-full outline-none text-slate-100"
+                    />
                     <img src={search_icon} className="size-5" alt="Search" />
                 </div>
                 {/* Microphone icon for voice search */}
@@ -60,7 +78,12 @@ const Navbar = ({ onMenuClick, onImport }) => {
 
                             {/* Expanded search input field */}
                             <div className="py-2 px-4 border border-[#3d3d3d] focus-within:border-[#007fff] rounded-3xl flex-1 flex items-center gap-2">
-                                <input autoFocus placeholder="Search" type="text" className="w-full outline-none text-slate-100" />
+                                <input onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={handleSearch}
+                                    value={searchQuery}
+                                    autoFocus type="text" placeholder="Search"
+                                    className="w-full outline-none text-slate-100"
+                                />
                                 <img src={search_icon} className="size-5" alt="Search" />
                             </div>
                             {/* Microphone icon for voice search */}
