@@ -457,7 +457,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                                 defaultValue={currentVideoTime} min="0" max={duration} step="any"
                                 className="w-full cursor-pointer media-slider media-slider-red"
                                 style={{
-                                    background: `linear-gradient(to right, #065fd4 0%, #065fd4 ${currentProgressPercentage}%, rgba(255, 255, 255, 0.2) ${currentProgressPercentage}%, rgba(255, 255, 255, 0.2) 100%)`
+                                    background: `linear-gradient(to right, #007fff 0%, #007fff ${currentProgressPercentage}%, rgba(255, 255, 255, 0.2) ${currentProgressPercentage}%, rgba(255, 255, 255, 0.2) 100%)`
                                 }}
                             />
                         </div>

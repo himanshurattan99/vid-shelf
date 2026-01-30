@@ -313,7 +313,7 @@ const App = () => {
     showNotification('Subtitles added successfully')
   }
 
-  // Update video progress (time viewed)
+  // Update video progress (playback position)
   const updateVideoProgress = (videoId, currentTime) => {
     setVideos((prevVideos) => {
       const updatedVideos = { ...prevVideos }
@@ -321,6 +321,7 @@ const App = () => {
 
       if (!videoToUpdate) return prevVideos
 
+      // Update the video object with the new progress
       updatedVideos[videoId] = {
         ...videoToUpdate,
         progress: currentTime
@@ -348,6 +349,11 @@ const App = () => {
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
+
+        {/* Semi-transparent overlay when sidebar is expanded in slide mode */}
+        {((sidebarExpanded) && (sidebarMode === 'slide')) &&
+          <div onClick={() => setSidebarExpanded(false)} className="bg-black opacity-30 absolute inset-0"></div>
+        }
       </main>
 
       {/* Global Notification Toast */}

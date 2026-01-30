@@ -23,7 +23,7 @@ const Error = ({ errorCode, errorMessage }) => {
 
             <div className='mt-6 flex justify-center lg:-translate-x-27'>
                 <Link to='/'>
-                    <button className="py-1 px-3 hover:bg-[#2d3d5a] border border-[#3d3d3d] hover:border-[#2d3d5a] rounded-3xl text-[#065fd4] font-medium cursor-pointer">
+                    <button className="py-1 px-3 hover:bg-[#2d3d5a] border border-[#3d3d3d] hover:border-[#2d3d5a] rounded-3xl text-[#007fff] font-medium cursor-pointer">
                         Go to Home
                     </button>
                 </Link>

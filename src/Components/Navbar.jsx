@@ -38,7 +38,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
             {/* Middle section: Search bar (hidden on mobile screens, visible on larger screens) */}
             <div className="hidden sm:w-1/2 lg:w-2/5 sm:flex sm:items-center sm:gap-3 lg:gap-5">
                 {/* Search input field */}
-                <div className="w-full py-2 px-4 border border-[#3d3d3d] focus-within:border-[#065fd4] rounded-3xl flex items-center gap-2">
+                <div className="w-full py-2 px-4 border border-[#3d3d3d] focus-within:border-[#007fff] rounded-3xl flex items-center gap-2">
                     <input placeholder="Search" type="text" className="w-full outline-none text-slate-100" />
                     <img src={search_icon} className="size-5" alt="Search" />
                 </div>
@@ -59,7 +59,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                             </button>
 
                             {/* Expanded search input field */}
-                            <div className="py-2 px-4 border border-[#3d3d3d] focus-within:border-[#065fd4] rounded-3xl flex-1 flex items-center gap-2">
+                            <div className="py-2 px-4 border border-[#3d3d3d] focus-within:border-[#007fff] rounded-3xl flex-1 flex items-center gap-2">
                                 <input autoFocus placeholder="Search" type="text" className="w-full outline-none text-slate-100" />
                                 <img src={search_icon} className="size-5" alt="Search" />
                             </div>
