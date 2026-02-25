@@ -7,6 +7,7 @@ import Home from './Pages/Home'
 import Video from './Pages/Video'
 import Playlists from './Pages/Playlists'
 import Playlist from './Pages/Playlist'
+import History from './Pages/History'
 import Search from './Pages/Search'
 import Error from './Pages/Error'
 import { shuffleArray, removeFileExtension, generateId, getVideoDuration, generateThumbnail } from './utils'
@@ -17,9 +18,10 @@ const App = () => {
   // State for playlists
   const [playlists, setPlaylists] = useState({
     favourites: { id: 'favourites', name: 'Favourites', videoIds: [] },
-    watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] },
-    history: { id: 'history', name: 'History', videoIds: [] }
+    watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] }
   })
+  // State for history
+  const [history, setHistory] = useState([])
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   // State for sidebar mode ('contract' or 'slide')
@@ -234,11 +236,11 @@ const App = () => {
     })
   }
 
-  // Add video to Watch History (LIFO, max 100 video IDs)
+  // Add video to history (LIFO, max 100 video IDs)
   const addVideoToHistory = (videoId) => {
-    setPlaylists((prev) => {
+    setHistory((prev) => {
       // Create new list without the video (if it was already there)
-      const newHistoryIds = prev.history.videoIds.filter((id) => id !== videoId)
+      const newHistoryIds = prev.filter((id) => id !== videoId)
 
       // Add video to the front
       newHistoryIds.unshift(videoId)
@@ -248,15 +250,15 @@ const App = () => {
         newHistoryIds.length = 100
       }
 
-      // Return new state with updated Watch History playlist
-      return {
-        ...prev,
-        history: {
-          ...prev.history,
-          videoIds: newHistoryIds
-        }
-      }
+      // Return new state with updated history
+      return newHistoryIds
     })
+  }
+
+  // Remove video from history
+  const removeVideoFromHistory = (videoId) => {
+    setHistory((prev) => prev.filter((id) => id !== videoId))
+    showNotification('Video removed from History')
   }
 
   // Update video thumbnail
@@ -346,6 +348,7 @@ const App = () => {
           <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
+          <Route path='/history' element={<History videos={videos} history={history} removeVideoFromHistory={removeVideoFromHistory} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/search' element={<Search videos={videos} sidebarExpanded={sidebarExpanded} />} />

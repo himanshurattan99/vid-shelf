@@ -1,6 +1,7 @@
 import { useLocation, Link } from 'react-router-dom'
 import home_icon from '../assets/icons/home-icon.png'
 import library_icon from '../assets/icons/library-icon.png'
+import history_icon from '../assets/icons/history-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
 import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
@@ -32,6 +33,13 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                         <button className={`w-full p-2 ${(currentPath === '/library') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                             <img src={library_icon} className="w-6" alt="" />
                             {(isLabelVisible) && <span className="truncate">Library</span>}
+                        </button>
+                    </Link>
+
+                    <Link to='/history'>
+                        <button className={`w-full p-2 ${(currentPath === '/history') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
+                            <img src={history_icon} className="w-6" alt="" />
+                            {(isLabelVisible) && <span className="truncate">History</span>}
                         </button>
                     </Link>
                 </div>
