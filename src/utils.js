@@ -80,16 +80,73 @@ export const isVideoInPlaylist = (videoId, playlistId, playlists) => {
     return playlists[playlistId]?.videoIds?.includes(videoId)
 }
 
-// Helper function to normalize text (lowercase and trim)
+// Remove punctuation and formatting from text, keeping only letters, numbers, and spaces
+const removePunctuationAndFormatting = (text) => {
+    if (!text) return ''
+
+    let normalizedText = text
+        // Convert underscores to spaces
+        .replace(/_/g, ' ')
+        // Remove all punctuation and special characters, keep only letters, numbers, spaces
+        .replace(/[^\w\s]/g, ' ')
+        // Replace multiple spaces with single space
+        .replace(/\s+/g, ' ')
+        .trim()
+
+    return normalizedText
+}
+
+// Removes stop words from the text
+const removeStopWords = (text) => {
+    const stopWords = [
+        "a", "an", "the",           // articles
+        "and", "or", "but", "nor",  // conjunctions
+        "in", "on", "at", "to",     // prepositions
+        "of", "for", "by", "with",  // more prepositions
+        "is", "are", "was", "were", // basic "be" verbs
+        "this", "that", "it", "its" // demonstratives
+    ]
+
+    // Split text into words, filter out stop words, then rejoin
+    return text
+        .trim()
+        .split(/\s+/)
+        .filter((word) => !stopWords.includes(word))
+        .join(' ')
+}
+
+// Removes duplicate words from the text while preserving order
+const removeDuplicateWords = (text) => {
+    const words = text.trim().split(/\s+/)
+    const uniqueWordsSet = new Set()
+    const uniqueWords = []
+
+    for (const word of words) {
+        if (!uniqueWordsSet.has(word)) {
+            uniqueWordsSet.add(word)
+            uniqueWords.push(word)
+        }
+    }
+
+    return uniqueWords.join(' ')
+}
+
+// Lowercase and clean text by removing punctuations, stop words, and duplicates
 export const normalizeText = (text) => {
-    return (text) ? text.toString().toLowerCase().trim() : ""
+    if (!text) return ''
+
+    let normalizedText = text.toLowerCase()
+    normalizedText = removePunctuationAndFormatting(normalizedText)
+    normalizedText = removeStopWords(removeDuplicateWords(normalizedText))
+
+    return normalizedText
 }
 
 // Helper function to search videos based on name tokens
 export const searchVideos = ({ videos, searchQuery }) => {
     // Normalize and split search query into individual words (tokens)
-    const normalizedSearchInput = normalizeText(searchQuery)
-    const searchTokens = normalizedSearchInput.split(/\s+/).filter((token) => token.length > 0)
+    const normalizedSearchQuery = normalizeText(searchQuery)
+    const searchTokens = normalizedSearchQuery.split(/\s+/).filter((token) => token.length > 0)
 
     // Filter videos that match any search token in the name
     const searchResults = Object.fromEntries(
