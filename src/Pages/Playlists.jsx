@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import create_icon from '../assets/icons/create-icon.png'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
@@ -15,6 +15,8 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
     const [showCreateModal, setShowCreateModal] = useState(false)
     // State to toggle delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+    const navigate = useNavigate()
 
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
@@ -38,8 +40,8 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
                     return (
                         <div key={playlist.id} className="p-2 hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
                             <div className="aspect-video relative">
-                                {/* Link to playlist page */}
-                                <Link to={`/playlist?p=${playlist.id}`}>
+                                {/* Navigate to playlist page */}
+                                <div onClick={() => navigate(`/playlist?p=${playlist.id}`)}>
                                     {(firstVideo && firstVideo.thumbnail) ? (
                                         <img src={firstVideo.thumbnail} className="w-full object-cover rounded-lg" alt={firstVideo.name} />
                                     ) : (
@@ -49,7 +51,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
                                     <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                         {playlist.videoIds.length} videos
                                     </span>
-                                </Link>
+                                </div>
                             </div>
 
                             <div className="py-1 ps-2 flex justify-between items-start gap-2">

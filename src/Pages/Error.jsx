@@ -1,6 +1,8 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Error = ({ errorCode, errorMessage }) => {
+    const navigate = useNavigate()
+
     return (
         <div className="h-[92.5vh] px-3 flex-1">
             <div className="mt-3 lg:mt-6 flex flex-col items-center gap-1 sm:gap-2 lg:-translate-x-27">
@@ -22,11 +24,9 @@ const Error = ({ errorCode, errorMessage }) => {
             </div>
 
             <div className='mt-6 flex justify-center lg:-translate-x-27'>
-                <Link to='/'>
-                    <button className="py-1 px-3 hover:bg-[#2d3d5a] border border-[#3d3d3d] hover:border-[#2d3d5a] rounded-3xl text-[#007fff] font-medium cursor-pointer">
-                        Go to Home
-                    </button>
-                </Link>
+                <button onClick={() => navigate('/')} className="py-1 px-3 hover:bg-[#2d3d5a] border border-[#3d3d3d] hover:border-[#2d3d5a] rounded-3xl text-[#007fff] font-medium cursor-pointer">
+                    Go to Home
+                </button>
             </div>
         </div>
     )

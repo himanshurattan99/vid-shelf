@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import menu_icon from '../assets/icons/menu-icon.png'
 import vidshelf_logo from '../assets/logos/vidshelf-logo.png'
 import search_icon from '../assets/icons/search-icon.png'
@@ -24,11 +24,18 @@ const Navbar = ({ onMenuClick, onImport }) => {
         setSearchBarExpanded(!(searchBarExpanded))
     }
 
-    // Navigates to the search page when the user presses Enter
-    const handleSearch = (e) => {
-        if (e.key === 'Enter' && searchQuery.trim()) {
+    // Navigates to the search page
+    const performSearch = () => {
+        if (searchQuery.trim()) {
             navigate(`/search?q=${searchQuery}`)
             setSearchBarExpanded(false)
+        }
+    }
+
+    // Handle Enter key press
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            performSearch()
         }
     }
 
@@ -42,9 +49,9 @@ const Navbar = ({ onMenuClick, onImport }) => {
                     <img src={menu_icon} className="w-6" alt="Menu" />
                 </button>
                 {/* Logo linking to the home page */}
-                <Link to='/'>
+                <div onClick={() => navigate('/')}>
                     <img src={vidshelf_logo} className="w-24 cursor-pointer" alt="VidShelf Logo" />
-                </Link>
+                </div>
             </div>
 
             {/* Middle section: Search bar (hidden on mobile screens, visible on larger screens) */}
@@ -53,12 +60,14 @@ const Navbar = ({ onMenuClick, onImport }) => {
                 <div className="w-full py-2 px-4 border border-[#3d3d3d] focus-within:border-[#007fff] rounded-3xl flex items-center gap-2">
                     <input
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={handleSearch}
+                        onKeyDown={handleKeyDown}
                         value={searchQuery}
                         type="text" placeholder="Search"
                         className="w-full outline-none text-slate-100"
                     />
-                    <img src={search_icon} className="size-5" alt="Search" />
+                    <button onClick={performSearch} className="cursor-pointer">
+                        <img src={search_icon} className="size-5" alt="Search" />
+                    </button>
                 </div>
                 {/* Microphone icon for voice search */}
                 <img src={microphone_icon} className="size-5" alt="Microphone" />
@@ -79,12 +88,14 @@ const Navbar = ({ onMenuClick, onImport }) => {
                             {/* Expanded search input field */}
                             <div className="py-2 px-4 border border-[#3d3d3d] focus-within:border-[#007fff] rounded-3xl flex-1 flex items-center gap-2">
                                 <input onChange={(e) => setSearchQuery(e.target.value)}
-                                    onKeyDown={handleSearch}
+                                    onKeyDown={handleKeyDown}
                                     value={searchQuery}
                                     autoFocus type="text" placeholder="Search"
                                     className="w-full outline-none text-slate-100"
                                 />
-                                <img src={search_icon} className="size-5" alt="Search" />
+                                <button onClick={performSearch} className="cursor-pointer">
+                                    <img src={search_icon} className="size-5" alt="Search" />
+                                </button>
                             </div>
                             {/* Microphone icon for voice search */}
                             <img src={microphone_icon} className="size-5" alt="Microphone" />

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import remove_icon from '../assets/icons/remove-icon.png'
 import Error from '../Pages/Error'
@@ -11,6 +11,8 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+    const navigate = useNavigate()
 
     // Extract playlist ID from URL query parameters
     const [searchParams] = useSearchParams()
@@ -32,6 +34,20 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
     if (!playlist) {
         return (
             <Error errorCode='400' errorMessage="Oops! This playlist doesn't exist or went missing!" />
+        )
+    }
+
+    // Show empty state message if there are no videos in playlist
+    if (playlistVideosArray.length === 0) {
+        return (
+            <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] flex-1">
+                <h2 className="text-xl font-bold text-slate-100">
+                    {playlist.name}
+                </h2>
+                <div className="mt-5 text-sm text-slate-300">
+                    There are no videos in this playlist yet
+                </div>
+            </div>
         )
     }
 
@@ -61,17 +77,17 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                     return (
                         <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
                             <div className="rounded-lg relative overflow-hidden">
-                                {/* Link to video watch page with thumbnail card and duration overlay */}
-                                <Link to={`/watch?v=${video.id}&p=${playlistId}`}>
+                                {/* Video thumbnail card with duration overlay */}
+                                <div onClick={() => navigate(`/watch?v=${video.id}&p=${playlistId}`)}>
                                     <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
                                     <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                         {formatDuration(video.duration)}
                                     </span>
                                     {/* Progress Bar Overlay */}
                                     {(video.progress > 0) && (
-                                        <div className="h-1 bg-[#007fff] rounded-bl-lg rounded-tr-lg rounded-br-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                        <div className="h-1 bg-[#007fff] rounded-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
                                     )}
-                                </Link>
+                                </div>
                             </div>
 
                             <div className="py-1 ps-2 flex justify-between items-start gap-2">

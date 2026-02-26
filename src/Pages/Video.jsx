@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { useSearchParams, useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import favourites_icon from '../assets/icons/favourites-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
@@ -152,7 +152,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
                     {playlistVideosArray.map((video) => {
                         return (
-                            <Link key={video.id} to={`/watch?v=${video.id}&p=${playlistId}`}>
+                            <div key={video.id} onClick={() => navigate(`/watch?v=${video.id}&p=${playlistId}`)}>
                                 <div className={`p-2 ${(video.id === videoId) ? 'bg-[#2e2e2e]' : ''} hover:bg-[#2e2e2e] rounded-lg flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 cursor-pointer transition-colors`}>
                                     {/* Video thumbnail with duration overlay */}
                                     <div className="sm:w-[40%] aspect-video rounded-lg shrink-0 relative overflow-hidden">
@@ -201,7 +201,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                                         </div>
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         )
                     })}
                 </div>

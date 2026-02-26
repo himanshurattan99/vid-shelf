@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import more_options_icon from '../assets/icons/more-options-icon.png'
 import watch_later_icon from '../assets/icons/watch-later-icon.png'
 import playlists_icon from '../assets/icons/playlists-icon.png'
@@ -8,6 +8,7 @@ import Modal from '../Components/Modal'
 import { formatDuration, isVideoInPlaylist } from '../utils'
 
 const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist }) => {
+    const navigate = useNavigate()
     const location = useLocation()
 
     // State to track which video's option menu is open
@@ -36,6 +37,20 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist,
         return []
     }, [videos, homeVideos, location.pathname])
 
+    // Show empty state message if there are no videos in library
+    if (displayedVideos.length === 0) {
+        return (
+            <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] flex-1">
+                <h2 className="text-xl font-bold text-slate-100">
+                    {(location.pathname === '/') ? 'Home' : 'Library'}
+                </h2>
+                <div className="mt-5 text-sm text-slate-300">
+                    {(location.pathname === '/') ? 'No videos to show right now' : 'Your library is empty. Import some videos!'}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
             <h2 className="mb-3 text-xl font-bold">
@@ -46,17 +61,17 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist,
                 {displayedVideos.map((video) => (
                     <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
                         <div className="rounded-lg relative overflow-hidden">
-                            {/* Link to video watch page with thumbnail card and duration overlay */}
-                            <Link to={`/watch?v=${video.id}`}>
+                            {/* Video thumbnail card with duration overlay */}
+                            <div onClick={() => navigate(`/watch?v=${video.id}`)}>
                                 <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
                                 <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                     {formatDuration(video.duration)}
                                 </span>
                                 {/* Progress Bar Overlay */}
                                 {(video.progress > 0) && (
-                                    <div className="h-1 bg-[#007fff] rounded-bl-lg rounded-tr-lg rounded-br-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                    <div className="h-1 bg-[#007fff] rounded-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
                                 )}
-                            </Link>
+                            </div>
                         </div>
 
                         <div className="py-1 ps-2 flex justify-between items-start gap-2">
