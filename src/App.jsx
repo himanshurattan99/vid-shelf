@@ -351,7 +351,7 @@ const App = () => {
           <Route path='/history' element={<History videos={videos} history={history} removeVideoFromHistory={removeVideoFromHistory} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
-          <Route path='/search' element={<Search videos={videos} sidebarExpanded={sidebarExpanded} />} />
+          <Route path='/search' element={<Search videos={videos} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
 

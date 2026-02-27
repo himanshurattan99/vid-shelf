@@ -2,7 +2,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Error from './Error.jsx'
 import { searchVideos, formatDuration } from '../utils.js'
 
-const Search = ({ videos, sidebarExpanded = true }) => {
+const Search = ({ videos }) => {
     const navigate = useNavigate()
 
     // Extract search query from URL query parameters
@@ -31,30 +31,37 @@ const Search = ({ videos, sidebarExpanded = true }) => {
     }
 
     return (
-        <>
-            <div className="h-[92.5vh] text-slate-100 overflow-y-auto">
-                <div className="p-3 lg:p-6 flex flex-col gap-4">
-                    {searchResults.map((video) => {
-                        return (
-                            <div key={video.id} onClick={() => navigate(`/watch?v=${video.id}`)} className="p-2 hover:bg-[#1e1e1e] rounded-lg flex flex-col sm:flex-row gap-2 sm:gap-3 cursor-pointer">
-                                {/* Video thumbnail with duration overlay */}
-                                <div className={`${(sidebarExpanded) ? 'md:w-1/2' : 'md:w-2/5'} lg:w-1/3 aspect-video shrink-0 relative`}>
-                                    <img src={video.thumbnail} className="w-full object-cover rounded-lg" alt="" />
+        <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
+            <h2 className="mb-3 text-xl font-bold">
+                Search Results for "{searchQuery}"
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
+                {searchResults.map((video) => {
+                    return (
+                        <div key={video.id} className="hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
+                            <div className="rounded-lg relative overflow-hidden">
+                                {/* Video thumbnail card with duration overlay */}
+                                <div onClick={() => navigate(`/watch?v=${video.id}`)}>
+                                    <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
                                     <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                         {formatDuration(video.duration)}
                                     </span>
-                                </div>
-
-                                {/* Video name */}
-                                <div className="flex-1 flex items-center">
-                                    <h3 className="text-lg line-clamp-2">{video.name}</h3>
+                                    {/* Progress Bar Overlay */}
+                                    {(video.progress > 0) && (
+                                        <div className="h-1 bg-[#007fff] rounded-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
+                                    )}
                                 </div>
                             </div>
-                        )
-                    })}
-                </div>
+
+                            <div className="py-1 ps-2 flex justify-between items-start gap-2">
+                                <h3 className="text-sm font-medium leading-5 line-clamp-2">{video.name}</h3>
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
-        </>
+        </div>
     )
 }
 

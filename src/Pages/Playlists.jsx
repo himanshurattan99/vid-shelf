@@ -39,14 +39,14 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
 
                     return (
                         <div key={playlist.id} className="p-2 hover:bg-[#212121] rounded-lg cursor-pointer transition-colors">
-                            <div className="aspect-video relative">
+                            <div className="relative overflow-hidden">
                                 {/* Navigate to playlist page */}
                                 <div onClick={() => navigate(`/playlist?p=${playlist.id}`)}>
                                     {(firstVideo && firstVideo.thumbnail) ? (
-                                        <img src={firstVideo.thumbnail} className="w-full object-cover rounded-lg" alt={firstVideo.name} />
+                                        <img src={firstVideo.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={firstVideo.name} />
                                     ) : (
                                         // Show placeholder if playlist is empty or first video has no thumbnail
-                                        <div className="h-full bg-[#282828] rounded-lg text-sm flex justify-center items-center">No preview</div>
+                                        <div className="w-full aspect-video bg-[#282828] rounded-lg text-sm text-white/50 flex justify-center items-center">No preview</div>
                                     )}
                                     <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
                                         {playlist.videoIds.length} videos
