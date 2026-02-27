@@ -9,6 +9,7 @@ import Playlists from './Pages/Playlists'
 import Playlist from './Pages/Playlist'
 import History from './Pages/History'
 import Search from './Pages/Search'
+import Settings from './Pages/Settings'
 import Error from './Pages/Error'
 import { shuffleArray, removeFileExtension, generateId, getVideoDuration, generateThumbnail } from './utils'
 
@@ -22,6 +23,8 @@ const App = () => {
   })
   // State for history
   const [history, setHistory] = useState([])
+  // State for tracking if history is enabled
+  const [historyEnabled, setHistoryEnabled] = useState(true)
   // State for sidebar expansion (expanded/collapsed)
   const [sidebarExpanded, setSidebarExpanded] = useState(true)
   // State for sidebar mode ('contract' or 'slide')
@@ -238,6 +241,8 @@ const App = () => {
 
   // Add video to history (LIFO, max 100 video IDs)
   const addVideoToHistory = (videoId) => {
+    if (!historyEnabled) return // Do not add to history if disabled
+
     setHistory((prev) => {
       // Create new list without the video (if it was already there)
       const newHistoryIds = prev.filter((id) => id !== videoId)
@@ -259,6 +264,34 @@ const App = () => {
   const removeVideoFromHistory = (videoId) => {
     setHistory((prev) => prev.filter((id) => id !== videoId))
     showNotification('Video removed from History')
+  }
+
+  // Clear all videos from history
+  const clearHistory = () => {
+    setHistory([])
+    showNotification('Watch history cleared')
+  }
+
+  // Clear all data (videos, playlists, history)
+  const clearAllData = () => {
+    // Revoke all blob URLs to prevent memory leaks
+    Object.values(videos).forEach((video) => {
+      if (video.url) URL.revokeObjectURL(video.url)
+      if (video.thumbnail) URL.revokeObjectURL(video.thumbnail)
+      if (video.subtitles) {
+        video.subtitles.forEach((sub) => URL.revokeObjectURL(sub.src))
+      }
+    })
+
+    // Reset all state to defaults/empty
+    setVideos({})
+    setPlaylists({
+      favourites: { id: 'favourites', name: 'Favourites', videoIds: [] },
+      watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] }
+    })
+    setHistory([])
+
+    showNotification('All data cleared successfully')
   }
 
   // Update video thumbnail
@@ -318,6 +351,8 @@ const App = () => {
 
   // Update video progress (playback position)
   const updateVideoProgress = (videoId, currentTime) => {
+    if (!historyEnabled) return // Do not track progress if history is disabled
+
     setVideos((prevVideos) => {
       const updatedVideos = { ...prevVideos }
       const videoToUpdate = updatedVideos[videoId]
@@ -352,6 +387,7 @@ const App = () => {
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/search' element={<Search videos={videos} />} />
+          <Route path='/settings' element={<Settings historyEnabled={historyEnabled} setHistoryEnabled={setHistoryEnabled} clearHistory={clearHistory} clearAllData={clearAllData} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
 

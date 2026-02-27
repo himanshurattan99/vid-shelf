@@ -60,7 +60,7 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
 
                 {/* Settings section */}
                 <div className="py-3">
-                    <button className="w-full p-2 hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer">
+                    <button onClick={() => navigate('/settings')} className={`w-full p-2 ${(currentPath === '/settings') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
                         <img src={settings_icon} className="w-6" alt="" />
                         {(isLabelVisible) && <span className="truncate">Settings</span>}
                     </button>
