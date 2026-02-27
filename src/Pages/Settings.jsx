@@ -72,8 +72,8 @@ const Settings = ({ historyEnabled, setHistoryEnabled, clearHistory, clearAllDat
             </div>
 
             {/* Clear History Confirmation Modal */}
-            {showClearHistoryModal && (
-                <Modal type="confirm-action"
+            {(showClearHistoryModal) && (
+                <Modal type="confirm" actionText="Clear"
                     title="Clear watch history?"
                     onClose={() => setShowClearHistoryModal(false)}
                     onConfirm={() => {
@@ -84,8 +84,8 @@ const Settings = ({ historyEnabled, setHistoryEnabled, clearHistory, clearAllDat
             )}
 
             {/* Clear All Data Confirmation Modal */}
-            {showClearDataModal && (
-                <Modal type="delete-video"
+            {(showClearDataModal) && (
+                <Modal type="danger" actionText="Delete All"
                     title="Delete all the app data?"
                     onClose={() => setShowClearDataModal(false)}
                     onConfirm={() => {

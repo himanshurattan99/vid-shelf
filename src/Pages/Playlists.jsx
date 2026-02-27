@@ -86,7 +86,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
 
             {/* Create Playlist Modal */}
             {(showCreateModal) && (
-                <Modal type="create-playlist"
+                <Modal type="prompt" actionText="Create" placeholder="Playlist Name"
                     title="New Playlist"
                     onClose={() => setShowCreateModal(false)}
                     onConfirm={(newPlaylistName) => {
@@ -102,7 +102,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylist }) => {
             {/* Delete playlist modal */}
             {(showDeleteModal) && (
                 <Modal
-                    type="delete-playlist"
+                    type="danger" actionText="Delete"
                     title="Delete this playlist?"
                     onClose={() => setShowDeleteModal(false)}
                     onConfirm={() => {

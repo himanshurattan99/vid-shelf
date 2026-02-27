@@ -596,7 +596,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
 
             {/* Thumbnail Update Confirmation Modal */}
             {(showThumbnailConfirmation) && (
-                <Modal type="confirm-action"
+                <Modal type="confirm" actionText="Update"
                     title="Update video thumbnail to current frame?"
                     onClose={() => {
                         setShowThumbnailConfirmation(false)

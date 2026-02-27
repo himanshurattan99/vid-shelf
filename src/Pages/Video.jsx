@@ -209,7 +209,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
             {/* Delete video from Library modal */}
             {(showDeleteFromLibraryModal) && (
-                <Modal type="delete-video"
+                <Modal type="danger" actionText="Delete"
                     title="Delete from Library?"
                     onClose={() => setShowDeleteFromLibraryModal(false)}
                     onConfirm={() => {
@@ -222,7 +222,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
             {/* Save/Remove video via Playlist Selector modal */}
             {(showPlaylistSelectorModal) && (
-                <Modal type="playlist-selector"
+                <Modal type="selector"
                     title="Select Playlist"
                     onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
@@ -239,7 +239,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
 
             {/* Remove video from Playlist modal */}
             {(showRemoveFromPlaylistModal) && (
-                <Modal type="delete-video"
+                <Modal type="danger" actionText="Remove"
                     title="Remove from playlist?"
                     onClose={() => setShowRemoveFromPlaylistModal(false)}
                     onConfirm={() => {

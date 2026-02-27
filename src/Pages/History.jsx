@@ -5,7 +5,7 @@ import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const History = ({ videos, history, removeVideoFromHistory }) => {
+const History = ({ videos, history, historyEnabled, removeVideoFromHistory }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle delete confirmation modal
@@ -21,6 +21,13 @@ const History = ({ videos, history, removeVideoFromHistory }) => {
         return (
             <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] flex-1">
                 <h2 className="text-xl font-bold text-slate-100">History</h2>
+
+                {(!historyEnabled) && (
+                    <div className="w-max mt-5 p-3 bg-red-600/10 border border-red-600/20 rounded-lg text-sm text-red-500">
+                        Watch history is currently paused. New videos you watch won't show up here
+                    </div>
+                )}
+
                 <div className="mt-5 text-sm text-slate-300">
                     Your watch history is empty
                 </div>
@@ -33,6 +40,12 @@ const History = ({ videos, history, removeVideoFromHistory }) => {
             <h2 className="mb-3 text-xl font-bold">
                 History
             </h2>
+
+            {(!historyEnabled) && (
+                <div className="w-max mb-5 p-3 bg-red-600/10 border border-red-600/20 rounded-lg text-sm text-red-500">
+                    Watch history is currently paused. New videos you watch won't show up here
+                </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
                 {historyVideosArray.map((video) => {
@@ -99,7 +112,7 @@ const History = ({ videos, history, removeVideoFromHistory }) => {
 
             {/* Delete video modal */}
             {(showDeleteModal) && (
-                <Modal type="delete-video"
+                <Modal type="danger" actionText="Remove"
                     title="Remove from History?"
                     onClose={() => setShowDeleteModal(false)}
                     onConfirm={() => {

@@ -130,7 +130,7 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist,
 
             {/* Save/Remove video via Playlist Selector modal */}
             {(showPlaylistSelectorModal) && (
-                <Modal type="playlist-selector"
+                <Modal type="selector"
                     title="Select Playlist"
                     onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
@@ -147,7 +147,7 @@ const Home = ({ videos, homeVideos, deleteVideo, playlists, saveVideoToPlaylist,
 
             {/* Delete video from Library modal */}
             {(showDeleteFromLibraryModal) && (
-                <Modal type="delete-video"
+                <Modal type="danger" actionText="Delete"
                     title="Delete from Library?"
                     onClose={() => setShowDeleteFromLibraryModal(false)}
                     onConfirm={() => {

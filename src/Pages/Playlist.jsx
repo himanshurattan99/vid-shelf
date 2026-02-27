@@ -9,8 +9,8 @@ import { formatDuration } from '../utils'
 const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
-    // State to toggle delete confirmation modal
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    // State to toggle remove from playlist confirmation modal
+    const [showRemoveFromPlaylistModal, setShowRemoveFromPlaylistModal] = useState(false)
 
     const navigate = useNavigate()
 
@@ -65,7 +65,7 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                             <div key={video.id}
                                 onClick={() => {
                                     setSelectedVideoId(video.id)
-                                    setShowDeleteModal(true)
+                                    setShowRemoveFromPlaylistModal(true)
                                 }}
                                 className="aspect-video bg-[#282828] hover:bg-[#333] rounded-lg text-sm text-white/20 hover:text-slate-100 flex justify-center items-center cursor-pointer transition-colors"
                             >
@@ -105,7 +105,7 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                                     {(selectedVideoId === video.id) && (
                                         <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
                                             {/* Remove video from playlist (opens confirmation modal) */}
-                                            <div onClick={() => setShowDeleteModal(true)}
+                                            <div onClick={() => setShowRemoveFromPlaylistModal(true)}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
                                                 <img src={remove_icon} className="w-4" alt="" />
@@ -120,15 +120,15 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                 })}
             </div>
 
-            {/* Delete video modal */}
-            {(showDeleteModal) && (
-                <Modal type="delete-video"
-                    title="Delete this video?"
-                    onClose={() => setShowDeleteModal(false)}
+            {/* Remove video from playlist modal */}
+            {(showRemoveFromPlaylistModal) && (
+                <Modal type="danger" actionText="Remove"
+                    title="Remove from playlist?"
+                    onClose={() => setShowRemoveFromPlaylistModal(false)}
                     onConfirm={() => {
                         removeVideoFromPlaylist(playlistId, selectedVideoId)
                         setSelectedVideoId(null)
-                        setShowDeleteModal(false)
+                        setShowRemoveFromPlaylistModal(false)
                     }}
                 />
             )}
