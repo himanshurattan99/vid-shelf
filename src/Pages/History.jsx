@@ -5,11 +5,13 @@ import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const History = ({ videos, history, historyEnabled, removeVideoFromHistory }) => {
+const History = ({ videos, history, historyEnabled, removeVideoFromHistory, clearHistory }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    // State to toggle clear history confirmation modal
+    const [showClearHistoryModal, setShowClearHistoryModal] = useState(false)
 
     const navigate = useNavigate()
 
@@ -37,9 +39,18 @@ const History = ({ videos, history, historyEnabled, removeVideoFromHistory }) =>
 
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
-            <h2 className="mb-3 text-xl font-bold">
-                History
-            </h2>
+            <div className="mb-3 flex justify-between items-center">
+                <h2 className="text-xl font-bold">
+                    History
+                </h2>
+                <button
+                    onClick={() => setShowClearHistoryModal(true)}
+                    className="py-1.5 px-3 bg-[#282828] hover:bg-[#3d3d3d] rounded-full flex items-center gap-2 transition-colors cursor-pointer"
+                >
+                    <img src={remove_icon} alt="" className="w-4" />
+                    <div className="text-sm font-medium">Clear History</div>
+                </button>
+            </div>
 
             {(!historyEnabled) && (
                 <div className="w-max mb-5 p-3 bg-red-600/10 border border-red-600/20 rounded-lg text-sm text-red-500">
@@ -119,6 +130,18 @@ const History = ({ videos, history, historyEnabled, removeVideoFromHistory }) =>
                         removeVideoFromHistory(selectedVideoId)
                         setSelectedVideoId(null)
                         setShowDeleteModal(false)
+                    }}
+                />
+            )}
+
+            {/* Clear history modal */}
+            {(showClearHistoryModal) && (
+                <Modal type="danger" actionText="Clear"
+                    title="Clear watch history?"
+                    onClose={() => setShowClearHistoryModal(false)}
+                    onConfirm={() => {
+                        clearHistory()
+                        setShowClearHistoryModal(false)
                     }}
                 />
             )}

@@ -6,11 +6,13 @@ import Error from '../Pages/Error'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
+const Playlist = ({ videos, playlists, removeVideoFromPlaylist, clearPlaylist }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle remove from playlist confirmation modal
     const [showRemoveFromPlaylistModal, setShowRemoveFromPlaylistModal] = useState(false)
+    // State to toggle clear playlist confirmation modal
+    const [showClearPlaylistModal, setShowClearPlaylistModal] = useState(false)
 
     const navigate = useNavigate()
 
@@ -53,9 +55,18 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
 
     return (
         <div className="h-[92.5vh] p-3 lg:p-6 bg-[#181818] text-slate-100 flex-1 overflow-y-auto">
-            <h2 className="mb-3 text-xl font-bold">
-                {playlist.name}
-            </h2>
+            <div className="mb-3 flex justify-between items-center">
+                <h2 className="text-xl font-bold">
+                    {playlist.name}
+                </h2>
+                <button
+                    onClick={() => setShowClearPlaylistModal(true)}
+                    className="py-1.5 px-3 bg-[#282828] hover:bg-[#3d3d3d] rounded-full flex items-center gap-2 transition-colors cursor-pointer"
+                >
+                    <img src={remove_icon} className="w-4" alt="" />
+                    <div className="text-sm font-medium">Clear Playlist</div>
+                </button>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
                 {playlistVideosArray.map((video) => {
@@ -129,6 +140,18 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist }) => {
                         removeVideoFromPlaylist(playlistId, selectedVideoId)
                         setSelectedVideoId(null)
                         setShowRemoveFromPlaylistModal(false)
+                    }}
+                />
+            )}
+
+            {/* Clear playlist modal */}
+            {(showClearPlaylistModal) && (
+                <Modal type="danger" actionText="Clear"
+                    title={`Clear ${playlist.name}?`}
+                    onClose={() => setShowClearPlaylistModal(false)}
+                    onConfirm={() => {
+                        clearPlaylist(playlistId)
+                        setShowClearPlaylistModal(false)
                     }}
                 />
             )}
