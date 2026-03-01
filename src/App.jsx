@@ -266,10 +266,65 @@ const App = () => {
     showNotification('Video removed from History')
   }
 
-  // Clear all videos from history
+  // Clear all videos from history and reset their playback progress
   const clearHistory = () => {
+    // Reset the playback progress for all videos currently in watch history
+    setVideos((prevVideos) => {
+      const updatedVideos = { ...prevVideos }
+      history.forEach((videoId) => {
+        if (updatedVideos[videoId]) {
+          updatedVideos[videoId] = {
+            ...updatedVideos[videoId],
+            progress: 0
+          }
+        }
+      })
+      return updatedVideos
+    })
+    // Clear watch history
     setHistory([])
     showNotification('Watch history cleared')
+  }
+
+  // Clear all videos from library, playlists, and watch history (keep custom playlists)
+  const clearLibrary = () => {
+    // Revoke all blob URLs to prevent memory leaks
+    Object.values(videos).forEach((video) => {
+      if (video.url) URL.revokeObjectURL(video.url)
+      if (video.thumbnail) URL.revokeObjectURL(video.thumbnail)
+      if (video.subtitles) {
+        video.subtitles.forEach((sub) => URL.revokeObjectURL(sub.src))
+      }
+    })
+
+    // Delete all videos
+    setVideos({})
+
+    // Remove all videos from existing playlists (keep the playlists themselves)
+    setPlaylists((prevPlaylists) => {
+      const updatedPlaylists = {}
+      for (const [id, playlist] of Object.entries(prevPlaylists)) {
+        updatedPlaylists[id] = {
+          ...playlist,
+          videoIds: []
+        }
+      }
+      return updatedPlaylists
+    })
+
+    // Clear watch history
+    setHistory([])
+
+    showNotification('All videos cleared successfully')
+  }
+
+  // Delete all custom playlists
+  const deleteCustomPlaylists = () => {
+    setPlaylists({
+      favourites: { id: 'favourites', name: 'Favourites', videoIds: [] },
+      watch_later: { id: 'watch_later', name: 'Watch Later', videoIds: [] }
+    })
+    showNotification('Custom playlists deleted')
   }
 
   // Clear all data (videos, playlists, history)
@@ -387,7 +442,7 @@ const App = () => {
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/search' element={<Search videos={videos} />} />
-          <Route path='/settings' element={<Settings historyEnabled={historyEnabled} setHistoryEnabled={setHistoryEnabled} clearHistory={clearHistory} clearAllData={clearAllData} />} />
+          <Route path='/settings' element={<Settings historyEnabled={historyEnabled} setHistoryEnabled={setHistoryEnabled} clearHistory={clearHistory} deleteCustomPlaylists={deleteCustomPlaylists} clearLibrary={clearLibrary} clearAllData={clearAllData} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>
 

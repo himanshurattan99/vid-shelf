@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import Modal from '../Components/Modal'
 
-const Settings = ({ historyEnabled, setHistoryEnabled, clearHistory, clearAllData }) => {
+const Settings = ({ historyEnabled, setHistoryEnabled, clearHistory, deleteCustomPlaylists, clearLibrary, clearAllData }) => {
     // State variables for managing confirmation modals visibility
     const [showClearHistoryModal, setShowClearHistoryModal] = useState(false)
+    const [showDeleteCustomPlaylistsModal, setShowDeleteCustomPlaylistsModal] = useState(false)
+    const [showClearLibraryModal, setShowClearLibraryModal] = useState(false)
     const [showClearDataModal, setShowClearDataModal] = useState(false)
 
     return (
@@ -52,6 +54,44 @@ const Settings = ({ historyEnabled, setHistoryEnabled, clearHistory, clearAllDat
 
                     <div className="h-px my-1 bg-white/5"></div>
 
+                    {/* Delete Custom Playlists */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <h4 className="text-sm font-medium text-slate-200">Delete Custom Playlists</h4>
+                            <div className="mt-1 text-xs text-slate-400">
+                                Delete all playlists you have created. 'Favourites' and 'Watch Later' will not be deleted, but their contents will be emptied.
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setShowDeleteCustomPlaylistsModal(true)}
+                            className="py-1.5 px-4 bg-[#3d3d3d] hover:bg-[#4d4d4d] rounded-full text-sm font-medium shrink-0 transition-colors cursor-pointer"
+                        >
+                            Delete Playlists
+                        </button>
+                    </div>
+
+                    <div className="h-px my-1 bg-white/5"></div>
+
+                    {/* Clear Library */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <h4 className="text-sm font-medium text-red-500">Clear Library</h4>
+                            <div className="mt-1 text-xs text-slate-400">
+                                Remove all your imported videos from everywhere, including watch history. Your custom playlists will be kept but emptied.
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => setShowClearLibraryModal(true)}
+                            className="py-1.5 px-4 bg-red-600/20 hover:bg-red-600 rounded-full text-sm font-medium text-red-500 hover:text-white shrink-0 transition-colors cursor-pointer"
+                        >
+                            Clear Library
+                        </button>
+                    </div>
+
+                    <div className="h-px my-1 bg-white/5"></div>
+
                     {/* Clear All Data */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex-1">
@@ -79,6 +119,30 @@ const Settings = ({ historyEnabled, setHistoryEnabled, clearHistory, clearAllDat
                     onConfirm={() => {
                         clearHistory()
                         setShowClearHistoryModal(false)
+                    }}
+                />
+            )}
+
+            {/* Delete Custom Playlists Confirmation Modal */}
+            {showDeleteCustomPlaylistsModal && (
+                <Modal type="danger" actionText="Delete Playlists"
+                    title="Delete all custom playlists?"
+                    onClose={() => setShowDeleteCustomPlaylistsModal(false)}
+                    onConfirm={() => {
+                        deleteCustomPlaylists()
+                        setShowDeleteCustomPlaylistsModal(false)
+                    }}
+                />
+            )}
+
+            {/* Clear Library Confirmation Modal */}
+            {(showClearLibraryModal) && (
+                <Modal type="danger" actionText="Clear"
+                    title="Clear videos from library?"
+                    onClose={() => setShowClearLibraryModal(false)}
+                    onConfirm={() => {
+                        clearLibrary()
+                        setShowClearLibraryModal(false)
                     }}
                 />
             )}
