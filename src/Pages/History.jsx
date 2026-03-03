@@ -6,7 +6,7 @@ import more_options_icon from '../assets/icons/more-options-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const History = ({ videos, history, historyEnabled, removeVideoFromHistory, removeVideosFromHistory, clearHistory }) => {
+const History = ({ videos, history, historyEnabled, removeVideosFromHistory, clearHistory }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle delete confirmation modal
@@ -204,7 +204,7 @@ const History = ({ videos, history, historyEnabled, removeVideoFromHistory, remo
                     title="Remove from History?"
                     onClose={() => setShowDeleteModal(false)}
                     onConfirm={() => {
-                        removeVideoFromHistory(selectedVideoId)
+                        removeVideosFromHistory([selectedVideoId])
                         setSelectedVideoId(null)
                         setShowDeleteModal(false)
                     }}

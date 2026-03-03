@@ -11,7 +11,7 @@ import Error from './Error'
 import Modal from '../Components/Modal'
 import { isVideoInPlaylist, formatDuration } from '../utils'
 
-const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVideoFromPlaylist, addVideoToHistory, updateVideoThumbnail, addVideoSubtitles, updateVideoProgress }) => {
+const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVideosFromPlaylist, addVideoToHistory, updateVideoThumbnail, addVideoSubtitles, updateVideoProgress }) => {
     const navigate = useNavigate()
 
     // Extract video ID and playlist ID from URL query parameters
@@ -79,7 +79,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                         {/* Add/Remove video to Favourites */}
                         <button onClick={() => {
                             if (isVideoInPlaylist(video.id, 'favourites', playlists)) {
-                                removeVideoFromPlaylist('favourites', video.id)
+                                removeVideosFromPlaylist('favourites', [video.id])
                             } else {
                                 saveVideoToPlaylist('favourites', video.id)
                             }
@@ -93,7 +93,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                         {/* Add/Remove video to Watch Later */}
                         <button onClick={() => {
                             if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
-                                removeVideoFromPlaylist('watch_later', video.id)
+                                removeVideosFromPlaylist('watch_later', [video.id])
                             } else {
                                 saveVideoToPlaylist('watch_later', video.id)
                             }
@@ -213,7 +213,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                     title="Delete from Library?"
                     onClose={() => setShowDeleteFromLibraryModal(false)}
                     onConfirm={() => {
-                        deleteVideo(videoId)
+                        deleteVideos([videoId])
                         setShowDeleteFromLibraryModal(false)
                         navigate('/') // Redirect to Home page after deletion
                     }}
@@ -227,7 +227,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                     onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
                         if (isVideoInPlaylist(videoId, playlistId, playlists)) {
-                            removeVideoFromPlaylist(playlistId, videoId)
+                            removeVideosFromPlaylist(playlistId, [videoId])
                         } else {
                             saveVideoToPlaylist(playlistId, videoId)
                         }
@@ -243,7 +243,7 @@ const Video = ({ videos, deleteVideo, playlists, saveVideoToPlaylist, removeVide
                     title="Remove from playlist?"
                     onClose={() => setShowRemoveFromPlaylistModal(false)}
                     onConfirm={() => {
-                        removeVideoFromPlaylist(playlistId, selectedPlaylistVideoId)
+                        removeVideosFromPlaylist(playlistId, [selectedPlaylistVideoId])
                         setSelectedPlaylistVideoId(null)
                         setShowRemoveFromPlaylistModal(false)
                         // Redirect to Playlist page if the currently playing video is removed

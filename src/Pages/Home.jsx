@@ -8,7 +8,7 @@ import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration, isVideoInPlaylist } from '../utils'
 
-const Home = ({ videos, homeVideos, deleteVideo, deleteVideos, playlists, saveVideoToPlaylist, removeVideoFromPlaylist }) => {
+const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist, removeVideosFromPlaylist }) => {
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -167,7 +167,7 @@ const Home = ({ videos, homeVideos, deleteVideo, deleteVideos, playlists, saveVi
                                             <div onClick={(e) => {
                                                 e.stopPropagation()
                                                 if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
-                                                    removeVideoFromPlaylist('watch_later', video.id)
+                                                    removeVideosFromPlaylist('watch_later', [video.id])
                                                 } else {
                                                     saveVideoToPlaylist('watch_later', video.id)
                                                 }
@@ -218,7 +218,7 @@ const Home = ({ videos, homeVideos, deleteVideo, deleteVideos, playlists, saveVi
                     onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
                         if (isVideoInPlaylist(selectedVideoId, playlistId, playlists)) {
-                            removeVideoFromPlaylist(playlistId, selectedVideoId)
+                            removeVideosFromPlaylist(playlistId, [selectedVideoId])
                         } else {
                             saveVideoToPlaylist(playlistId, selectedVideoId)
                         }
@@ -234,7 +234,7 @@ const Home = ({ videos, homeVideos, deleteVideo, deleteVideos, playlists, saveVi
                     title="Delete from Library?"
                     onClose={() => setShowDeleteFromLibraryModal(false)}
                     onConfirm={() => {
-                        deleteVideo(selectedVideoId)
+                        deleteVideos([selectedVideoId])
                         setSelectedVideoId(null)
                         setShowDeleteFromLibraryModal(false)
                     }}

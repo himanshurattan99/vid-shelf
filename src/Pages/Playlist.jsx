@@ -7,7 +7,7 @@ import Error from '../Pages/Error'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
-const Playlist = ({ videos, playlists, removeVideoFromPlaylist, removeVideosFromPlaylist, clearPlaylist }) => {
+const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }) => {
     // State to track which video's option menu is open
     const [selectedVideoId, setSelectedVideoId] = useState(null)
     // State to toggle remove from playlist confirmation modal
@@ -214,7 +214,7 @@ const Playlist = ({ videos, playlists, removeVideoFromPlaylist, removeVideosFrom
                     title="Remove from playlist?"
                     onClose={() => setShowRemoveFromPlaylistModal(false)}
                     onConfirm={() => {
-                        removeVideoFromPlaylist(playlistId, selectedVideoId)
+                        removeVideosFromPlaylist(playlistId, [selectedVideoId])
                         setSelectedVideoId(null)
                         setShowRemoveFromPlaylistModal(false)
                     }}
