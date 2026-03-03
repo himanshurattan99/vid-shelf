@@ -154,6 +154,32 @@ const App = () => {
     showNotification('Video deleted from library')
   }
 
+  // Handle multiple video deletions from Library
+  const deleteVideos = (videoIdsToRemove) => {
+    setVideos((prevVideos) => {
+      const updatedVideos = { ...prevVideos }
+
+      videoIdsToRemove.forEach((videoId) => {
+        const videoToRemove = updatedVideos[videoId]
+
+        // Revoke blob URLs to prevent memory leaks
+        if (videoToRemove) {
+          if (videoToRemove.url) URL.revokeObjectURL(videoToRemove.url)
+          if (videoToRemove.thumbnail) URL.revokeObjectURL(videoToRemove.thumbnail)
+          if (videoToRemove.subtitles) {
+            videoToRemove.subtitles.forEach((sub) => URL.revokeObjectURL(sub.src))
+          }
+        }
+
+        delete updatedVideos[videoId]
+      })
+
+      return updatedVideos
+    })
+
+    showNotification(`${videoIdsToRemove.length} video(s) deleted from library`)
+  }
+
   // Create a new playlist
   const createPlaylist = (name) => {
     // Generate ID from name: lowercase and replace spaces with underscores
@@ -239,6 +265,27 @@ const App = () => {
     })
   }
 
+  // Remove multiple videos from playlist
+  const removeVideosFromPlaylist = (playlistId, videoIdsToRemove) => {
+    setPlaylists((prevPlaylists) => {
+      const playlist = prevPlaylists[playlistId]
+
+      // Safety check: if playlist doesn't exist, return previous state
+      if (!playlist) return prevPlaylists
+
+      showNotification(`${videoIdsToRemove.length} video(s) removed from ${playlist.name}`)
+
+      // Return new state with videos removed
+      return {
+        ...prevPlaylists,
+        [playlistId]: {
+          ...playlist,
+          videoIds: playlist.videoIds.filter((id) => !videoIdsToRemove.includes(id))
+        }
+      }
+    })
+  }
+
   // Add video to history (LIFO, max 100 video IDs)
   const addVideoToHistory = (videoId) => {
     if (!historyEnabled) return // Do not add to history if disabled
@@ -264,6 +311,12 @@ const App = () => {
   const removeVideoFromHistory = (videoId) => {
     setHistory((prev) => prev.filter((id) => id !== videoId))
     showNotification('Video removed from History')
+  }
+
+  // Remove multiple videos from history
+  const removeVideosFromHistory = (videoIdsToRemove) => {
+    setHistory((prev) => prev.filter((id) => !videoIdsToRemove.includes(id)))
+    showNotification(`${videoIdsToRemove.length} video(s) removed from History`)
   }
 
   // Clear all videos from history and reset their playback progress
@@ -450,12 +503,12 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
-          <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
+          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideo={deleteVideo} deleteVideos={deleteVideos} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
+          <Route path='/library' element={<Home videos={videos} deleteVideo={deleteVideo} deleteVideos={deleteVideos} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} />} />
           <Route path='/watch' element={<Video videos={videos} deleteVideo={deleteVideo} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideoFromPlaylist={removeVideoFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
-          <Route path='/history' element={<History videos={videos} history={history} historyEnabled={historyEnabled} removeVideoFromHistory={removeVideoFromHistory} clearHistory={clearHistory} />} />
+          <Route path='/history' element={<History videos={videos} history={history} historyEnabled={historyEnabled} removeVideoFromHistory={removeVideoFromHistory} removeVideosFromHistory={removeVideosFromHistory} clearHistory={clearHistory} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylist={removePlaylist} />} />
-          <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} clearPlaylist={clearPlaylist} />} />
+          <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideoFromPlaylist={removeVideoFromPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} clearPlaylist={clearPlaylist} />} />
           <Route path='/search' element={<Search videos={videos} />} />
           <Route path='/settings' element={<Settings historyEnabled={historyEnabled} setHistoryEnabled={setHistoryEnabled} clearHistory={clearHistory} deleteCustomPlaylists={deleteCustomPlaylists} clearLibrary={clearLibrary} clearAllData={clearAllData} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
