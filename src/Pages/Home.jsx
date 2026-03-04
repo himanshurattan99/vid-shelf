@@ -8,7 +8,7 @@ import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration, isVideoInPlaylist } from '../utils'
 
-const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist, removeVideosFromPlaylist }) => {
+const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist, saveVideosToPlaylist, removeVideosFromPlaylist }) => {
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -76,6 +76,20 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist
                                 className="py-1.5 px-4 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Cancel
+                            </button>
+
+                            {/* Batch Add to Playlist Button */}
+                            <button
+                                onClick={() => {
+                                    if (selectedVideoIds.length > 0) {
+                                        setShowPlaylistSelectorModal(true)
+                                    }
+                                }}
+                                disabled={selectedVideoIds.length === 0}
+                                className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedVideoIds.length > 0) ? 'bg-[#007fff]/20 hover:bg-[#007fff] text-[#33a1ff] hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
+                            >
+                                <img src={playlists_icon} className="w-4" alt="" />
+                                <span>Add to Playlist</span>
                             </button>
 
                             {/* Batch Delete Button */}
@@ -217,14 +231,18 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist
                     title="Select Playlist"
                     onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
-                        if (isVideoInPlaylist(selectedVideoId, playlistId, playlists)) {
-                            removeVideosFromPlaylist(playlistId, [selectedVideoId])
+                        if (isSelectionMode) {
+                            saveVideosToPlaylist(playlistId, selectedVideoIds)
                         } else {
-                            saveVideoToPlaylist(playlistId, selectedVideoId)
+                            if (isVideoInPlaylist(selectedVideoId, playlistId, playlists)) {
+                                removeVideosFromPlaylist(playlistId, [selectedVideoId])
+                            } else {
+                                saveVideoToPlaylist(playlistId, selectedVideoId)
+                            }
                         }
                     }}
                     playlists={playlists}
-                    videoId={selectedVideoId}
+                    videoId={(isSelectionMode) ? null : selectedVideoId}
                 />
             )}
 
