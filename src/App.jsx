@@ -200,35 +200,8 @@ const App = () => {
     })
   }
 
-  // Add video to playlist
-  const saveVideoToPlaylist = (playlistId, videoId) => {
-    setPlaylists((prevPlaylists) => {
-      const playlist = prevPlaylists[playlistId]
-
-      // Safety check: if playlist doesn't exist, return previous state
-      if (!playlist) return prevPlaylists
-
-      // Check for duplicates to prevent adding the same video twice
-      if (playlist.videoIds.includes(videoId)) {
-        showNotification(`Video already in ${playlist.name}!`)
-        return prevPlaylists
-      }
-
-      showNotification(`Added to ${playlist.name}`)
-
-      // Return new state with updated playlist
-      return {
-        ...prevPlaylists,
-        [playlistId]: {
-          ...playlist,
-          videoIds: [...playlist.videoIds, videoId]
-        }
-      }
-    })
-  }
-
   // Add multiple videos to playlist
-  const saveVideosToPlaylist = (playlistId, videoIds) => {
+  const addVideosToPlaylist = (playlistId, videoIds) => {
     setPlaylists((prevPlaylists) => {
       const playlist = prevPlaylists[playlistId]
 
@@ -493,9 +466,9 @@ const App = () => {
 
         {/* Application Routes */}
         <Routes>
-          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideos={deleteVideos} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} saveVideosToPlaylist={saveVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} />} />
-          <Route path='/library' element={<Home videos={videos} deleteVideos={deleteVideos} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} saveVideosToPlaylist={saveVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} />} />
-          <Route path='/watch' element={<Video videos={videos} deleteVideos={deleteVideos} playlists={playlists} saveVideoToPlaylist={saveVideoToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
+          <Route path='/' element={<Home videos={videos} homeVideos={homeVideos} deleteVideos={deleteVideos} playlists={playlists} addVideosToPlaylist={addVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} />} />
+          <Route path='/library' element={<Home videos={videos} deleteVideos={deleteVideos} playlists={playlists} addVideosToPlaylist={addVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} />} />
+          <Route path='/watch' element={<Video videos={videos} deleteVideos={deleteVideos} playlists={playlists} addVideosToPlaylist={addVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
           <Route path='/history' element={<History videos={videos} history={history} historyEnabled={historyEnabled} removeVideosFromHistory={removeVideosFromHistory} clearHistory={clearHistory} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylists={removePlaylists} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideosFromPlaylist={removeVideosFromPlaylist} clearPlaylist={clearPlaylist} />} />

@@ -11,7 +11,7 @@ import Error from './Error'
 import Modal from '../Components/Modal'
 import { isVideoInPlaylist, formatDuration } from '../utils'
 
-const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVideosFromPlaylist, addVideoToHistory, updateVideoThumbnail, addVideoSubtitles, updateVideoProgress }) => {
+const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVideosFromPlaylist, addVideoToHistory, updateVideoThumbnail, addVideoSubtitles, updateVideoProgress }) => {
     const navigate = useNavigate()
 
     // Extract video ID and playlist ID from URL query parameters
@@ -74,14 +74,14 @@ const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVid
                     {/* Video name */}
                     <h2 className="text-lg sm:text-xl font-medium">{video?.name}</h2>
 
-                    {/* Video action buttons: Favourites, Watch Later, Save/Remove from Playlist, Delete Video */}
+                    {/* Video action buttons: Favourites, Watch Later, Add/Remove from Playlist, Delete Video */}
                     <div className="flex gap-5">
                         {/* Add/Remove video to Favourites */}
                         <button onClick={() => {
                             if (isVideoInPlaylist(video.id, 'favourites', playlists)) {
                                 removeVideosFromPlaylist('favourites', [video.id])
                             } else {
-                                saveVideoToPlaylist('favourites', video.id)
+                                addVideosToPlaylist('favourites', [video.id])
                             }
                         }}
                             className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'favourites', playlists)) ? 'border border-gray-500' : ''}`}
@@ -95,7 +95,7 @@ const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVid
                             if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
                                 removeVideosFromPlaylist('watch_later', [video.id])
                             } else {
-                                saveVideoToPlaylist('watch_later', video.id)
+                                addVideosToPlaylist('watch_later', [video.id])
                             }
                         }}
                             className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'border border-gray-500' : ''}`}
@@ -104,10 +104,10 @@ const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVid
                             <img src={watch_later_icon} className="w-6" alt="Watch Later" />
                         </button>
 
-                        {/* Save/Remove from Playlist (opens Playlist Selector modal) */}
+                        {/* Add/Remove from Playlist (opens Playlist Selector modal) */}
                         <button onClick={() => setShowPlaylistSelectorModal(true)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
-                            title="Save/Remove from playlist"
+                            title="Add/Remove from playlist"
                         >
                             <img src={playlists_icon} className="w-6" alt="Playlists" />
                         </button>
@@ -220,7 +220,7 @@ const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVid
                 />
             )}
 
-            {/* Save/Remove video via Playlist Selector modal */}
+            {/* Add/Remove video via Playlist Selector modal */}
             {(showPlaylistSelectorModal) && (
                 <Modal type="selector"
                     title="Select Playlist"
@@ -229,7 +229,7 @@ const Video = ({ videos, deleteVideos, playlists, saveVideoToPlaylist, removeVid
                         if (isVideoInPlaylist(videoId, playlistId, playlists)) {
                             removeVideosFromPlaylist(playlistId, [videoId])
                         } else {
-                            saveVideoToPlaylist(playlistId, videoId)
+                            addVideosToPlaylist(playlistId, [videoId])
                         }
                     }}
                     playlists={playlists}

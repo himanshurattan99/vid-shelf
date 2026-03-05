@@ -8,7 +8,7 @@ import remove_icon from '../assets/icons/remove-icon.png'
 import Modal from '../Components/Modal'
 import { formatDuration, isVideoInPlaylist } from '../utils'
 
-const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist, saveVideosToPlaylist, removeVideosFromPlaylist }) => {
+const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist, removeVideosFromPlaylist }) => {
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -174,7 +174,7 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist
                                         <img src={more_options_icon} alt="" />
                                     </button>
 
-                                    {/* Dropdown menu: Watch Later, Save/Remove from Playlist, Delete Video */}
+                                    {/* Dropdown menu: Watch Later, Add/Remove from Playlist, Delete Video */}
                                     {(selectedVideoId === video.id) && (
                                         <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
                                             {/* Add/Remove video to Watch Later */}
@@ -183,7 +183,7 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist
                                                 if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
                                                     removeVideosFromPlaylist('watch_later', [video.id])
                                                 } else {
-                                                    saveVideoToPlaylist('watch_later', video.id)
+                                                    addVideosToPlaylist('watch_later', [video.id])
                                                 }
                                                 setSelectedVideoId(null)
                                             }}
@@ -195,7 +195,7 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist
                                                 </span>
                                             </div>
 
-                                            {/* Save/Remove from Playlist (opens Playlist Selector modal) */}
+                                            {/* Add/Remove from Playlist (opens Playlist Selector modal) */}
                                             <div onClick={(e) => {
                                                 e.stopPropagation()
                                                 setShowPlaylistSelectorModal(true)
@@ -225,19 +225,19 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, saveVideoToPlaylist
                 })}
             </div>
 
-            {/* Save/Remove video via Playlist Selector modal */}
+            {/* Add/Remove video via Playlist Selector modal */}
             {(showPlaylistSelectorModal) && (
                 <Modal type="selector"
                     title="Select Playlist"
                     onClose={() => setShowPlaylistSelectorModal(false)}
                     onConfirm={(playlistId) => {
                         if (isSelectionMode) {
-                            saveVideosToPlaylist(playlistId, selectedVideoIds)
+                            addVideosToPlaylist(playlistId, selectedVideoIds)
                         } else {
                             if (isVideoInPlaylist(selectedVideoId, playlistId, playlists)) {
                                 removeVideosFromPlaylist(playlistId, [selectedVideoId])
                             } else {
-                                saveVideoToPlaylist(playlistId, selectedVideoId)
+                                addVideosToPlaylist(playlistId, [selectedVideoId])
                             }
                         }
                     }}
