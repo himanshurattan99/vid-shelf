@@ -19,7 +19,6 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
     // State variables for batch removal (multi-select)
     const [isSelectionMode, setIsSelectionMode] = useState(false)
     const [selectedPlaylistIds, setSelectedPlaylistIds] = useState([])
-    const [showDeleteMultipleModal, setShowDeleteMultipleModal] = useState(false)
 
     const navigate = useNavigate()
 
@@ -47,7 +46,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                             <button
                                 onClick={() => {
                                     if (selectedPlaylistIds.length > 0) {
-                                        setShowDeleteMultipleModal(true)
+                                        setShowDeleteModal(true)
                                     }
                                 }}
                                 disabled={selectedPlaylistIds.length === 0}
@@ -180,30 +179,24 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                 />
             )}
 
-            {/* Delete playlist modal */}
+            {/* Delete playlist(s) modal */}
             {(showDeleteModal) && (
                 <Modal
-                    type="danger" actionText="Delete"
-                    title="Delete this playlist?"
+                    type="danger"
+                    actionText={(isSelectionMode) ? "Delete Selected" : "Delete"}
+                    title={(isSelectionMode) ? `Delete ${selectedPlaylistIds.length} playlist(s)?` : "Delete this playlist?"}
                     onClose={() => setShowDeleteModal(false)}
                     onConfirm={() => {
-                        removePlaylists([selectedPlaylistId])
-                        setSelectedPlaylistId(null)
-                        setShowDeleteModal(false)
-                    }}
-                />
-            )}
+                        const idsToDelete = (isSelectionMode) ? selectedPlaylistIds : [selectedPlaylistId]
+                        removePlaylists(idsToDelete)
 
-            {/* Delete multiple playlists modal */}
-            {(showDeleteMultipleModal) && (
-                <Modal type="danger" actionText="Delete Selected"
-                    title={`Delete ${selectedPlaylistIds.length} playlist(s)?`}
-                    onClose={() => setShowDeleteMultipleModal(false)}
-                    onConfirm={() => {
-                        removePlaylists(selectedPlaylistIds)
-                        setIsSelectionMode(false)
-                        setSelectedPlaylistIds([])
-                        setShowDeleteMultipleModal(false)
+                        setShowDeleteModal(false)
+                        if (isSelectionMode) {
+                            setSelectedPlaylistIds([])
+                            setIsSelectionMode(false)
+                        } else {
+                            setSelectedPlaylistId(null)
+                        }
                     }}
                 />
             )}

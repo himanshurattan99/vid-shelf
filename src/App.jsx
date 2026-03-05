@@ -472,7 +472,7 @@ const App = () => {
           <Route path='/history' element={<History videos={videos} history={history} historyEnabled={historyEnabled} removeVideosFromHistory={removeVideosFromHistory} clearHistory={clearHistory} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} removePlaylists={removePlaylists} />} />
           <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideosFromPlaylist={removeVideosFromPlaylist} clearPlaylist={clearPlaylist} />} />
-          <Route path='/search' element={<Search videos={videos} />} />
+          <Route path='/search' element={<Search videos={videos} deleteVideos={deleteVideos} playlists={playlists} addVideosToPlaylist={addVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} />} />
           <Route path='/settings' element={<Settings historyEnabled={historyEnabled} setHistoryEnabled={setHistoryEnabled} clearHistory={clearHistory} deleteCustomPlaylists={deleteCustomPlaylists} clearLibrary={clearLibrary} clearAllData={clearAllData} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
         </Routes>

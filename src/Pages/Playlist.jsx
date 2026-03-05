@@ -17,7 +17,6 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
     // State variables for batch removal (multi-select)
     const [isSelectionMode, setIsSelectionMode] = useState(false)
     const [selectedVideoIds, setSelectedVideoIds] = useState([])
-    const [showRemoveMultipleModal, setShowRemoveMultipleModal] = useState(false)
 
     const navigate = useNavigate()
 
@@ -84,7 +83,7 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                             <button
                                 onClick={() => {
                                     if (selectedVideoIds.length > 0) {
-                                        setShowRemoveMultipleModal(true)
+                                        setShowRemoveFromPlaylistModal(true)
                                     }
                                 }}
                                 disabled={selectedVideoIds.length === 0}
@@ -181,13 +180,14 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                                         e.stopPropagation()
                                         setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
                                     }}
-                                        className="w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                        disabled={isSelectionMode}
+                                        className={`w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <img src={more_options_icon} alt="" />
                                     </button>
 
                                     {/* Dropdown menu: Remove Video option */}
-                                    {(selectedVideoId === video.id) && (
+                                    {(selectedVideoId === video.id && !isSelectionMode) && (
                                         <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
                                             {/* Remove video from playlist (opens confirmation modal) */}
                                             <div onClick={(e) => {
@@ -208,15 +208,23 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                 })}
             </div>
 
-            {/* Remove video from playlist modal */}
+            {/* Remove video(s) from playlist modal */}
             {(showRemoveFromPlaylistModal) && (
-                <Modal type="danger" actionText="Remove"
-                    title="Remove from playlist?"
+                <Modal type="danger"
+                    actionText={(isSelectionMode) ? "Remove Selected" : "Remove"}
+                    title={(isSelectionMode) ? `Remove ${selectedVideoIds.length} video(s)?` : "Remove from playlist?"}
                     onClose={() => setShowRemoveFromPlaylistModal(false)}
                     onConfirm={() => {
-                        removeVideosFromPlaylist(playlistId, [selectedVideoId])
-                        setSelectedVideoId(null)
+                        const idsToRemove = (isSelectionMode) ? selectedVideoIds : [selectedVideoId]
+                        removeVideosFromPlaylist(playlistId, idsToRemove)
+
                         setShowRemoveFromPlaylistModal(false)
+                        if (isSelectionMode) {
+                            setSelectedVideoIds([])
+                            setIsSelectionMode(false)
+                        } else {
+                            setSelectedVideoId(null)
+                        }
                     }}
                 />
             )}
@@ -229,20 +237,6 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                     onConfirm={() => {
                         clearPlaylist(playlistId)
                         setShowClearPlaylistModal(false)
-                    }}
-                />
-            )}
-
-            {/* Remove multiple videos modal */}
-            {(showRemoveMultipleModal) && (
-                <Modal type="danger" actionText="Remove Selected"
-                    title={`Remove ${selectedVideoIds.length} video(s)?`}
-                    onClose={() => setShowRemoveMultipleModal(false)}
-                    onConfirm={() => {
-                        removeVideosFromPlaylist(playlistId, selectedVideoIds)
-                        setIsSelectionMode(false)
-                        setSelectedVideoIds([])
-                        setShowRemoveMultipleModal(false)
                     }}
                 />
             )}

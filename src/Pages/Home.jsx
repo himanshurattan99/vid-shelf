@@ -21,7 +21,6 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
     // State variables for batch removal (multi-select)
     const [isSelectionMode, setIsSelectionMode] = useState(false)
     const [selectedVideoIds, setSelectedVideoIds] = useState([])
-    const [showDeleteMultipleModal, setShowDeleteMultipleModal] = useState(false)
 
     // Filter and sort videos based on the current route
     const displayedVideos = useMemo(() => {
@@ -96,7 +95,7 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
                             <button
                                 onClick={() => {
                                     if (selectedVideoIds.length > 0) {
-                                        setShowDeleteMultipleModal(true)
+                                        setShowDeleteFromLibraryModal(true)
                                     }
                                 }}
                                 disabled={selectedVideoIds.length === 0}
@@ -169,13 +168,14 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
                                         e.stopPropagation()
                                         setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
                                     }}
-                                        className="w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                        disabled={isSelectionMode}
+                                        className={`w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <img src={more_options_icon} alt="" />
                                     </button>
 
                                     {/* Dropdown menu: Watch Later, Add/Remove from Playlist, Delete Video */}
-                                    {(selectedVideoId === video.id) && (
+                                    {(selectedVideoId === video.id && !isSelectionMode) && (
                                         <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
                                             {/* Add/Remove video to Watch Later */}
                                             <div onClick={(e) => {
@@ -225,7 +225,7 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
                 })}
             </div>
 
-            {/* Add/Remove video via Playlist Selector modal */}
+            {/* Add/Remove video(s) via Playlist Selector modal */}
             {(showPlaylistSelectorModal) && (
                 <Modal type="selector"
                     title="Select Playlist"
@@ -246,29 +246,23 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
                 />
             )}
 
-            {/* Delete video from Library modal */}
+            {/* Delete video(s) from Library modal */}
             {(showDeleteFromLibraryModal) && (
-                <Modal type="danger" actionText="Delete"
-                    title="Delete from Library?"
+                <Modal type="danger"
+                    actionText={(isSelectionMode) ? "Delete Selected" : "Delete"}
+                    title={(isSelectionMode) ? `Delete ${selectedVideoIds.length} video(s)?` : "Delete from Library?"}
                     onClose={() => setShowDeleteFromLibraryModal(false)}
                     onConfirm={() => {
-                        deleteVideos([selectedVideoId])
-                        setSelectedVideoId(null)
-                        setShowDeleteFromLibraryModal(false)
-                    }}
-                />
-            )}
+                        const idsToDelete = (isSelectionMode) ? selectedVideoIds : [selectedVideoId]
+                        deleteVideos(idsToDelete)
 
-            {/* Delete multiple videos from Library modal */}
-            {(showDeleteMultipleModal) && (
-                <Modal type="danger" actionText="Delete Selected"
-                    title={`Delete ${selectedVideoIds.length} video(s)?`}
-                    onClose={() => setShowDeleteMultipleModal(false)}
-                    onConfirm={() => {
-                        deleteVideos(selectedVideoIds)
-                        setIsSelectionMode(false)
-                        setSelectedVideoIds([])
-                        setShowDeleteMultipleModal(false)
+                        setShowDeleteFromLibraryModal(false)
+                        if (isSelectionMode) {
+                            setSelectedVideoIds([])
+                            setIsSelectionMode(false)
+                        } else {
+                            setSelectedVideoId(null)
+                        }
                     }}
                 />
             )}

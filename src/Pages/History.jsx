@@ -16,7 +16,6 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
     // State variables for batch removal (multi-select)
     const [isSelectionMode, setIsSelectionMode] = useState(false)
     const [selectedVideoIds, setSelectedVideoIds] = useState([])
-    const [showRemoveMultipleModal, setShowRemoveMultipleModal] = useState(false)
 
     const navigate = useNavigate()
 
@@ -68,7 +67,7 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                             <button
                                 onClick={() => {
                                     if (selectedVideoIds.length > 0) {
-                                        setShowRemoveMultipleModal(true)
+                                        setShowDeleteModal(true)
                                     }
                                 }}
                                 disabled={selectedVideoIds.length === 0}
@@ -198,15 +197,23 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                 })}
             </div>
 
-            {/* Delete video modal */}
+            {/* Remove video(s) from history modal */}
             {(showDeleteModal) && (
-                <Modal type="danger" actionText="Remove"
-                    title="Remove from History?"
+                <Modal type="danger"
+                    actionText={(isSelectionMode) ? "Remove Selected" : "Remove"}
+                    title={(isSelectionMode) ? `Remove ${selectedVideoIds.length} video(s) from History?` : "Remove from History?"}
                     onClose={() => setShowDeleteModal(false)}
                     onConfirm={() => {
-                        removeVideosFromHistory([selectedVideoId])
-                        setSelectedVideoId(null)
+                        const idsToRemove = (isSelectionMode) ? selectedVideoIds : [selectedVideoId]
+                        removeVideosFromHistory(idsToRemove)
+
                         setShowDeleteModal(false)
+                        if (isSelectionMode) {
+                            setSelectedVideoIds([])
+                            setIsSelectionMode(false)
+                        } else {
+                            setSelectedVideoId(null)
+                        }
                     }}
                 />
             )}
@@ -219,20 +226,6 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                     onConfirm={() => {
                         clearHistory()
                         setShowClearHistoryModal(false)
-                    }}
-                />
-            )}
-
-            {/* Remove multiple videos modal */}
-            {(showRemoveMultipleModal) && (
-                <Modal type="danger" actionText="Remove Selected"
-                    title={`Remove ${selectedVideoIds.length} video(s) from History?`}
-                    onClose={() => setShowRemoveMultipleModal(false)}
-                    onConfirm={() => {
-                        removeVideosFromHistory(selectedVideoIds)
-                        setIsSelectionMode(false)
-                        setSelectedVideoIds([])
-                        setShowRemoveMultipleModal(false)
                     }}
                 />
             )}
