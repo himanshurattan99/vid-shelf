@@ -1,14 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { formatDuration } from '../utils'
-import play_icon from '../assets/icons/play-icon.png'
-import pause_icon from '../assets/icons/pause-icon.png'
-import replay_icon from '../assets/icons/replay-icon.png'
-import volume_icon from '../assets/icons/volume-icon.png'
-import mute_icon from '../assets/icons/mute-icon.png'
-import thumbnail_icon from '../assets/icons/thumbnail-icon.png'
-import subtitles_icon from '../assets/icons/subtitles-icon.png'
-import fullscreen_icon from '../assets/icons/fullscreen-icon.png'
-import exit_fullscreen_icon from '../assets/icons/exit-fullscreen-icon.png'
+import { Play, Pause, RotateCcw, Volume2, VolumeX, Image as Thumbnail, Subtitles, Maximize, Minimize } from 'lucide-react'
 import Modal from './Modal'
 
 const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, updateVideoThumbnail, updateVideoProgress }) => {
@@ -432,7 +424,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                     <img src={thumbnail} className="w-full aspect-video lg:rounded-xl" alt="" />
                     <div className="bg-black/50 lg:rounded-xl absolute inset-0">
                         <button onClick={handleThumbnailClick} className="w-full h-full flex justify-center items-center cursor-pointer">
-                            <img src={play_icon} className="w-1/10 sm:w-1/12 lg:w-1/16 transition-transform hover:scale-125 hover:rotate-360" alt="Play Video" />
+                            <Play className="w-1/10 sm:w-1/12 lg:w-1/16 transition-transform hover:scale-125 hover:rotate-360" />
                         </button>
                     </div>
                 </div>
@@ -441,8 +433,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
             {/* Brief play/pause icon display on video click */}
             {(showClickIcon && !(showThumbnail)) && (
                 <div className="p-3 bg-black/50 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping">
-                    <img src={(isPlaying) ? play_icon : pause_icon}
-                        className="size-6 animate-pulse" alt="" />
+                    {(isPlaying) ? <Play className="size-6 animate-pulse" /> : <Pause className="size-6 animate-pulse" />}
                 </div>
             )}
 
@@ -466,14 +457,14 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                         <div className="py-2 px-3 flex items-center gap-5">
                             {/* Play/Pause button */}
                             <button onClick={(hasEnded) ? replayVideo : togglePlay} className="w-6 cursor-pointer transition-transform hover:rotate-360">
-                                <img src={(hasEnded) ? replay_icon : ((isPlaying) ? pause_icon : play_icon)} alt="" />
+                                {(hasEnded) ? <RotateCcw /> : ((isPlaying) ? <Pause /> : <Play />)}
                             </button>
 
                             {/* Volume control section */}
                             <div className="flex items-center gap-1 cursor-pointer">
                                 {/* Volume/Mute button */}
                                 <button onClick={toggleIsMuted} className="outline-none">
-                                    <img src={(isMuted) ? mute_icon : volume_icon} className="w-6" alt="" />
+                                    {(isMuted) ? <VolumeX className="w-6" /> : <Volume2 className="w-6" />}
                                 </button>
 
                                 {/* Volume slider */}
@@ -507,7 +498,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                             }}
                                 className="ml-auto p-1 hover:bg-white/30 rounded-full cursor-pointer relative transition-colors" title="Set as Thumbnail"
                             >
-                                <img src={thumbnail_icon} className="w-6" alt="Set Thumbnail" />
+                                <Thumbnail className="w-6" />
                             </button>
 
                             {/* Subtitles Menu Control */}
@@ -518,7 +509,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                                         className={`p-1 ${(selectedSubtitlesIndex !== -1) ? 'bg-white/30' : 'hover:bg-white/30'} rounded-full cursor-pointer relative transition-colors`}
                                         title="Subtitles"
                                     >
-                                        <img src={subtitles_icon} className="w-6" alt="Subtitles" />
+                                        <Subtitles className="w-6" />
                                     </button>
 
                                     {/* Subtitles Menu */}
@@ -588,7 +579,11 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
 
                             {/* Toggle fullscreen button */}
                             <button onClick={toggleFullscreen} className="cursor-pointer">
-                                <img src={(isFullscreen) ? exit_fullscreen_icon : fullscreen_icon} className="w-6 transition-transform duration-250 hover:scale-105" alt="" />
+                                {(isFullscreen) ?
+                                    <Minimize className="w-6 transition-transform duration-250 hover:scale-105" />
+                                    :
+                                    <Maximize className="w-6 transition-transform duration-250 hover:scale-105" />
+                                }
                             </button>
                         </div>
                     </div>

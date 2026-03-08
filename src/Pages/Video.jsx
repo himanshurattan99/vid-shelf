@@ -1,11 +1,6 @@
 import { useState, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import favourites_icon from '../assets/icons/favourites-icon.png'
-import watch_later_icon from '../assets/icons/watch-later-icon.png'
-import playlists_icon from '../assets/icons/playlists-icon.png'
-import subtitles_icon from '../assets/icons/subtitles-icon.png'
-import remove_icon from '../assets/icons/remove-icon.png'
-import more_options_icon from '../assets/icons/more-options-icon.png'
+import { Heart, Clock, ListVideo, Subtitles, Trash, MoreVertical } from 'lucide-react'
 import VideoPlayer from '../Components/VideoPlayer'
 import Error from './Error'
 import Modal from '../Components/Modal'
@@ -87,7 +82,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                             className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'favourites', playlists)) ? 'border border-gray-500' : ''}`}
                             title={(isVideoInPlaylist(video.id, 'favourites', playlists)) ? "Remove from Favourites" : "Add to Favourites"}
                         >
-                            <img src={favourites_icon} className="w-6" alt="Favourites" />
+                            <Heart className="w-6" />
                         </button>
 
                         {/* Add/Remove video to Watch Later */}
@@ -101,7 +96,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                             className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'border border-gray-500' : ''}`}
                             title={(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? "Remove from Watch Later" : "Add to Watch Later"}
                         >
-                            <img src={watch_later_icon} className="w-6" alt="Watch Later" />
+                            <Clock className="w-6" />
                         </button>
 
                         {/* Add/Remove from Playlist (opens Playlist Selector modal) */}
@@ -109,7 +104,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Add/Remove from playlist"
                         >
-                            <img src={playlists_icon} className="w-6" alt="Playlists" />
+                            <ListVideo className="w-6" />
                         </button>
 
                         {/* Hidden file input for importing subtitles */}
@@ -127,7 +122,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Add Subtitles"
                         >
-                            <img src={subtitles_icon} className="w-6" alt="Subtitles" />
+                            <Subtitles className="w-6" />
                         </button>
 
                         {/* Delete video (opens Delete from Library confirmation modal) */}
@@ -135,7 +130,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Delete Video"
                         >
-                            <img src={remove_icon} className="w-6" alt="Delete Video" />
+                            <Trash className="w-6" />
                         </button>
                     </div>
                 </div>
@@ -177,9 +172,9 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                                                 e.stopPropagation()
                                                 setSelectedPlaylistVideoId((selectedPlaylistVideoId === video.id) ? null : video.id)
                                             }}
-                                                className="w-5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                                className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
                                             >
-                                                <img src={more_options_icon} alt="" />
+                                                <MoreVertical className="size-5" />
                                             </button>
 
                                             {/* Dropdown menu: Remove Video option */}
@@ -193,7 +188,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                                                     }}
                                                         className="px-2 py-1 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-1"
                                                     >
-                                                        <img src={remove_icon} className="w-4" alt="" />
+                                                        <Trash className="w-4" />
                                                         <span>Remove from {playlist.name}</span>
                                                     </div>
                                                 </div>

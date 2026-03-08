@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import playlists_icon from '../assets/icons/playlists-icon.png'
+import { ListVideo } from 'lucide-react'
 import { isVideoInPlaylist } from '../utils'
 
 const Modal = ({ type, title, actionText, placeholder, onClose, onConfirm, playlists, videoId }) => {
@@ -57,7 +57,7 @@ const Modal = ({ type, title, actionText, placeholder, onClose, onConfirm, playl
                                 </div>
                                 {/* Show playlist icon if video is already in this playlist */}
                                 {(isVideoInPlaylist(videoId, playlist.id, playlists)) && (
-                                    <img src={playlists_icon} className="w-4" alt="" />
+                                    <ListVideo className="w-4" />
                                 )}
                             </div>
                         ))}

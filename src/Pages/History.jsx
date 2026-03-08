@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import selection_box_icon from '../assets/icons/selection-box-icon.png'
-import remove_icon from '../assets/icons/remove-icon.png'
-import more_options_icon from '../assets/icons/more-options-icon.png'
+import { CheckSquare, MoreVertical, Trash } from 'lucide-react'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
 
@@ -73,7 +71,7 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                                 disabled={selectedVideoIds.length === 0}
                                 className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedVideoIds.length > 0) ? 'bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
                             >
-                                <img src={remove_icon} className="w-4" alt="" />
+                                <Trash className="w-4" />
                                 <span>Remove Selected ({selectedVideoIds.length})</span>
                             </button>
                         </>
@@ -84,7 +82,7 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                                 onClick={() => setIsSelectionMode(true)}
                                 className="py-1.5 px-4 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                             >
-                                <img src={selection_box_icon} className="w-4" alt="" />
+                                <CheckSquare className="w-4" />
                                 <span>Select</span>
                             </button>
 
@@ -93,7 +91,7 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                                 onClick={() => setShowClearHistoryModal(true)}
                                 className="py-1.5 px-3 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                             >
-                                <img src={remove_icon} alt="" className="w-4" />
+                                <Trash className="w-4" />
                                 <span>Clear History</span>
                             </button>
                         </>
@@ -170,9 +168,9 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                                         e.stopPropagation()
                                         setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
                                     }}
-                                        className="w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                        className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
                                     >
-                                        <img src={more_options_icon} alt="" />
+                                        <MoreVertical className="size-5" />
                                     </button>
 
                                     {/* Dropdown menu: Remove Video option */}
@@ -185,7 +183,7 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                                             }}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
-                                                <img src={remove_icon} className="w-4" alt="" />
+                                                <Trash className="w-4" />
                                                 <span>Remove from History</span>
                                             </div>
                                         </div>

@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import more_options_icon from '../assets/icons/more-options-icon.png'
-import selection_box_icon from '../assets/icons/selection-box-icon.png'
-import remove_icon from '../assets/icons/remove-icon.png'
+import { CheckSquare, MoreVertical, Trash } from 'lucide-react'
 import Error from '../Pages/Error'
 import Modal from '../Components/Modal'
 import { formatDuration } from '../utils'
@@ -89,7 +87,7 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                                 disabled={selectedVideoIds.length === 0}
                                 className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedVideoIds.length > 0) ? 'bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
                             >
-                                <img src={remove_icon} className="w-4" alt="" />
+                                <Trash className="w-4" />
                                 <span>Remove Selected ({selectedVideoIds.length})</span>
                             </button>
                         </>
@@ -100,7 +98,7 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                                 onClick={() => setIsSelectionMode(true)}
                                 className="py-1.5 px-4 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                             >
-                                <img src={selection_box_icon} className="w-4" alt="" />
+                                <CheckSquare className="w-4" />
                                 <span>Select</span>
                             </button>
 
@@ -109,7 +107,7 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                                 onClick={() => setShowClearPlaylistModal(true)}
                                 className="py-1.5 px-3 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                             >
-                                <img src={remove_icon} className="w-4" alt="" />
+                                <Trash className="w-4" />
                                 <span>Clear Playlist</span>
                             </button>
                         </>
@@ -181,9 +179,9 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                                         setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
                                     }}
                                         disabled={isSelectionMode}
-                                        className={`w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        className={`p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
-                                        <img src={more_options_icon} alt="" />
+                                        <MoreVertical className="size-5" />
                                     </button>
 
                                     {/* Dropdown menu: Remove Video option */}
@@ -196,7 +194,7 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                                             }}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
-                                                <img src={remove_icon} className="w-4" alt="" />
+                                                <Trash className="w-4" />
                                                 <span>Remove from {playlist.name}</span>
                                             </div>
                                         </div>

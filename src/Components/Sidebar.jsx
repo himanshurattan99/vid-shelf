@@ -1,11 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import home_icon from '../assets/icons/home-icon.png'
-import library_icon from '../assets/icons/library-icon.png'
-import history_icon from '../assets/icons/history-icon.png'
-import playlists_icon from '../assets/icons/playlists-icon.png'
-import favourites_icon from '../assets/icons/favourites-icon.png'
-import watch_later_icon from '../assets/icons/watch-later-icon.png'
-import settings_icon from '../assets/icons/settings-icon.png'
+import { Home, Library, History, ListVideo, Heart, Clock, Settings } from 'lucide-react'
 
 const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
     // Show labels when sidebar is expanded or in 'slide' mode
@@ -25,17 +19,17 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                 {/* Home, Library and History section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
                     <button onClick={() => navigate('/')} className={`w-full p-2 ${(currentPath === '/') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={home_icon} className="w-6" alt="" />
+                        <Home className="w-6" />
                         {(isLabelVisible) && <span className="truncate">Home</span>}
                     </button>
 
                     <button onClick={() => navigate('/library')} className={`w-full p-2 ${(currentPath === '/library') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={library_icon} className="w-6" alt="" />
+                        <Library className="w-6" />
                         {(isLabelVisible) && <span className="truncate">Library</span>}
                     </button>
 
                     <button onClick={() => navigate('/history')} className={`w-full p-2 ${(currentPath === '/history') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={history_icon} className="w-6" alt="" />
+                        <History className="w-6" />
                         {(isLabelVisible) && <span className="truncate">History</span>}
                     </button>
                 </div>
@@ -43,17 +37,17 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                 {/* Playlists, Favourites and Watch Later section */}
                 <div className="py-3 border-b border-b-[#3d3d3d]">
                     <button onClick={() => navigate('/playlists')} className={`w-full p-2 ${(currentPath === '/playlists') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={playlists_icon} className="w-6" alt="" />
+                        <ListVideo className="w-6" />
                         {(isLabelVisible) && <span className="truncate">Playlists</span>}
                     </button>
 
                     <button onClick={() => navigate('/playlist?p=favourites')} className={`w-full p-2 ${(currentPath === '/playlist?p=favourites') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={favourites_icon} className="w-6" alt="" />
+                        <Heart className="w-6" />
                         {(isLabelVisible) && <span className="truncate">Favourites</span>}
                     </button>
 
                     <button onClick={() => navigate('/playlist?p=watch_later')} className={`w-full p-2 ${(currentPath === '/playlist?p=watch_later') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={watch_later_icon} className="w-6" alt="" />
+                        <Clock className="w-6" />
                         {(isLabelVisible) && <span className="truncate">Watch Later</span>}
                     </button>
                 </div>
@@ -61,7 +55,7 @@ const Sidebar = ({ isExpanded = true, mode = 'contract' }) => {
                 {/* Settings section */}
                 <div className="py-3">
                     <button onClick={() => navigate('/settings')} className={`w-full p-2 ${(currentPath === '/settings') ? 'bg-[#2f2f2f]' : ''} hover:bg-[#2f2f2f] rounded-md flex gap-6 cursor-pointer`}>
-                        <img src={settings_icon} className="w-6" alt="" />
+                        <Settings className="w-6" />
                         {(isLabelVisible) && <span className="truncate">Settings</span>}
                     </button>
                 </div>

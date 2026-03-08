@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import create_icon from '../assets/icons/create-icon.png'
-import more_options_icon from '../assets/icons/more-options-icon.png'
-import selection_box_icon from '../assets/icons/selection-box-icon.png'
-import remove_icon from '../assets/icons/remove-icon.png'
+import { CheckSquare, PlusSquare, MoreVertical, Trash } from 'lucide-react'
 import Modal from '../Components/Modal'
 
 const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
@@ -52,7 +49,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                                 disabled={selectedPlaylistIds.length === 0}
                                 className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedPlaylistIds.length > 0) ? 'bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
                             >
-                                <img src={remove_icon} className="w-4" alt="" />
+                                <Trash className="w-4" />
                                 <span>Remove Selected ({selectedPlaylistIds.length})</span>
                             </button>
                         </>
@@ -63,7 +60,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                                 onClick={() => setIsSelectionMode(true)}
                                 className="py-1.5 px-4 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                             >
-                                <img src={selection_box_icon} className="w-4" alt="" />
+                                <CheckSquare className="w-4" />
                                 <span>Select</span>
                             </button>
 
@@ -71,7 +68,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                             <button onClick={() => setShowCreateModal(true)}
                                 className="py-1.5 px-3 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
                             >
-                                <img src={create_icon} className="w-4" alt="Create Playlist" />
+                                <PlusSquare className="w-4" />
                                 <span>Create Playlist</span>
                             </button>
                         </>
@@ -136,9 +133,9 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                                             e.stopPropagation()
                                             setSelectedPlaylistId((selectedPlaylistId === playlist.id) ? null : playlist.id)
                                         }}
-                                            className="w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                            className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
                                         >
-                                            <img src={more_options_icon} alt="" />
+                                            <MoreVertical className="size-5" />
                                         </button>
                                     )}
 
@@ -152,7 +149,7 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                                             }}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
-                                                <img src={remove_icon} className="w-4" alt="" />
+                                                <Trash className="w-4" />
                                                 <span>Remove playlist</span>
                                             </div>
                                         </div>

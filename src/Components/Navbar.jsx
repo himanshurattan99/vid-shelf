@@ -1,12 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import menu_icon from '../assets/icons/menu-icon.png'
+import { AlignLeft, Search, Mic, X, Upload, User } from 'lucide-react'
 import vidshelf_logo from '../assets/logos/vidshelf-logo.png'
-import search_icon from '../assets/icons/search-icon.png'
-import microphone_icon from '../assets/icons/microphone-icon.png'
-import cross_icon from '../assets/icons/cross-icon.png'
-import import_icon from '../assets/icons/import-icon.png'
-import profile_icon from '../assets/icons/profile-icon.png'
 
 const Navbar = ({ onMenuClick, onImport }) => {
     // State to track search bar expansion on mobile screens
@@ -46,7 +41,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-5">
                 {/* Menu button to open/close sidebar */}
                 <button onClick={onMenuClick} className="p-2 hover:bg-[#3c3c3c] rounded-full cursor-pointer">
-                    <img src={menu_icon} className="w-6" alt="Menu" />
+                    <AlignLeft className="w-6 text-slate-100" />
                 </button>
                 {/* Logo linking to the home page */}
                 <div onClick={() => navigate('/')}>
@@ -66,11 +61,11 @@ const Navbar = ({ onMenuClick, onImport }) => {
                         className="w-full outline-none text-slate-100"
                     />
                     <button onClick={performSearch} className="cursor-pointer">
-                        <img src={search_icon} className="size-5" alt="Search" />
+                        <Search className="size-5.5 text-slate-100" />
                     </button>
                 </div>
                 {/* Microphone icon for voice search */}
-                <img src={microphone_icon} className="size-5" alt="Microphone" />
+                <Mic className="size-6 text-slate-100" />
             </div>
 
             {/* Right section: Search button (on mobile screens), Import button, Profile icon */}
@@ -82,7 +77,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                         <div className="px-2 bg-[#181818] sm:hidden flex items-center gap-2 absolute inset-0">
                             {/* Close button for expanded search */}
                             <button onClick={toggleSearchBar} className="p-1 hover:bg-[#3c3c3c] rounded-full cursor-pointer">
-                                <img src={cross_icon} className="size-7" alt="Close" />
+                                <X className="size-7 text-slate-100" />
                             </button>
 
                             {/* Expanded search input field */}
@@ -94,18 +89,18 @@ const Navbar = ({ onMenuClick, onImport }) => {
                                     className="w-full outline-none text-slate-100"
                                 />
                                 <button onClick={performSearch} className="cursor-pointer">
-                                    <img src={search_icon} className="size-5" alt="Search" />
+                                    <Search className="size-5.5 text-slate-100" />
                                 </button>
                             </div>
                             {/* Microphone icon for voice search */}
-                            <img src={microphone_icon} className="size-5" alt="Microphone" />
+                            <Mic className="size-6 text-slate-100" />
                         </div>
                     )
                     : (
                         // Mobile search toggle button
                         <div className="sm:hidden">
                             <button onClick={toggleSearchBar} className="p-2 hover:bg-[#3c3c3c] rounded-full cursor-pointer">
-                                <img src={search_icon} className="size-5" alt="Search" />
+                                <Search className="size-5.5 text-slate-100" />
                             </button>
                         </div>
                     )
@@ -124,12 +119,12 @@ const Navbar = ({ onMenuClick, onImport }) => {
                 />
                 {/* Import button to trigger file input */}
                 <button onClick={() => fileInputRef.current.click()} className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3c3c3c] rounded-3xl text-slate-100 sm:flex sm:items-center sm:gap-1 cursor-pointer">
-                    <img src={import_icon} className="size-6" alt="Import" />
+                    <Upload className="size-5" />
                     <div className="hidden sm:block">Import</div>
                 </button>
 
                 {/* Profile icon */}
-                <img src={profile_icon} className="size-6" alt="Profile" />
+                <User className="size-5 text-slate-100" />
             </div>
         </nav>
     )

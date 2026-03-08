@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import selection_box_icon from '../assets/icons/selection-box-icon.png'
-import more_options_icon from '../assets/icons/more-options-icon.png'
-import watch_later_icon from '../assets/icons/watch-later-icon.png'
-import playlists_icon from '../assets/icons/playlists-icon.png'
-import remove_icon from '../assets/icons/remove-icon.png'
+import { CheckSquare, MoreVertical, Clock, ListVideo, Trash } from 'lucide-react'
 import Error from './Error.jsx'
 import Modal from '../Components/Modal.jsx'
 import { searchVideos, formatDuration, isVideoInPlaylist } from '../utils.js'
@@ -79,7 +75,7 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                                 disabled={selectedVideoIds.length === 0}
                                 className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedVideoIds.length > 0) ? 'bg-[#007fff]/20 hover:bg-[#007fff] text-[#33a1ff] hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
                             >
-                                <img src={playlists_icon} className={`w-4 ${(selectedVideoIds.length === 0) ? 'opacity-50' : ''}`} alt="" />
+                                <ListVideo className="w-4" />
                                 <span>Add to Playlist</span>
                             </button>
 
@@ -93,7 +89,7 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                                 disabled={selectedVideoIds.length === 0}
                                 className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedVideoIds.length > 0) ? 'bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
                             >
-                                <img src={remove_icon} className="w-4" alt="" />
+                                <Trash className="w-4" />
                                 <span>Delete Selected ({selectedVideoIds.length})</span>
                             </button>
                         </>
@@ -102,7 +98,7 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                             onClick={() => setIsSelectionMode(true)}
                             className="py-1.5 px-4 bg-[#282828] hover:bg-[#3d3d3d] rounded-full flex items-center gap-2 text-sm font-medium transition-colors cursor-pointer"
                         >
-                            <img src={selection_box_icon} className="w-4" alt="" />
+                            <CheckSquare className="w-4" />
                             <span>Select</span>
                         </button>
                     )}
@@ -158,9 +154,9 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                                         setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
                                     }}
                                         disabled={isSelectionMode}
-                                        className={`w-6 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
+                                        className={`p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
-                                        <img src={more_options_icon} alt="" />
+                                        <MoreVertical className="size-5" />
                                     </button>
 
                                     {/* Dropdown menu: Watch Later, Add/Remove from Playlist, Delete Video */}
@@ -178,7 +174,7 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                                             }}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
-                                                <img src={watch_later_icon} className="w-4" alt="" />
+                                                <Clock className="w-4" />
                                                 <span>
                                                     {(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'Remove from Watch Later' : 'Add to Watch Later'}
                                                 </span>
@@ -191,7 +187,7 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                                             }}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
-                                                <img src={playlists_icon} className="w-4" alt="" />
+                                                <ListVideo className="w-4" />
                                                 <span>Select Playlist</span>
                                             </div>
 
@@ -202,7 +198,7 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                                             }}
                                                 className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
                                             >
-                                                <img src={remove_icon} className="w-4" alt="" />
+                                                <Trash className="w-4" />
                                                 <span>Delete Video</span>
                                             </div>
                                         </div>
