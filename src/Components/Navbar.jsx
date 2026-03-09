@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AlignLeft, Search, Mic, X, Upload, User } from 'lucide-react'
+import { AlignLeft as Menu, Search, Mic, X, Upload, User } from 'lucide-react'
 import vidshelf_logo from '../assets/logos/vidshelf-logo.png'
 
 const Navbar = ({ onMenuClick, onImport }) => {
@@ -40,8 +40,8 @@ const Navbar = ({ onMenuClick, onImport }) => {
             {/* Left section: Menu button and logo */}
             <div className="flex items-center gap-2 sm:gap-3 lg:gap-5">
                 {/* Menu button to open/close sidebar */}
-                <button onClick={onMenuClick} className="p-2 hover:bg-[#3c3c3c] rounded-full cursor-pointer">
-                    <AlignLeft className="w-6 text-slate-100" />
+                <button onClick={onMenuClick} className="p-2 hover:bg-[#3c3c3c] rounded-full cursor-pointer" aria-label="Menu">
+                    <Menu className="w-6 text-slate-100" />
                 </button>
                 {/* Logo linking to the home page */}
                 <div onClick={() => navigate('/')}>
@@ -60,7 +60,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                         type="text" placeholder="Search"
                         className="w-full outline-none text-slate-100"
                     />
-                    <button onClick={performSearch} className="cursor-pointer">
+                    <button onClick={performSearch} className="cursor-pointer" aria-label="Search">
                         <Search className="size-5.5 text-slate-100" />
                     </button>
                 </div>
@@ -76,7 +76,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                         // Expanded mobile search bar
                         <div className="px-2 bg-[#181818] sm:hidden flex items-center gap-2 absolute inset-0">
                             {/* Close button for expanded search */}
-                            <button onClick={toggleSearchBar} className="p-1 hover:bg-[#3c3c3c] rounded-full cursor-pointer">
+                            <button onClick={toggleSearchBar} className="p-1 hover:bg-[#3c3c3c] rounded-full cursor-pointer" aria-label="Close Search">
                                 <X className="size-7 text-slate-100" />
                             </button>
 
@@ -88,7 +88,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                                     autoFocus type="text" placeholder="Search"
                                     className="w-full outline-none text-slate-100"
                                 />
-                                <button onClick={performSearch} className="cursor-pointer">
+                                <button onClick={performSearch} className="cursor-pointer" aria-label="Search">
                                     <Search className="size-5.5 text-slate-100" />
                                 </button>
                             </div>
@@ -99,7 +99,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                     : (
                         // Mobile search toggle button
                         <div className="sm:hidden">
-                            <button onClick={toggleSearchBar} className="p-2 hover:bg-[#3c3c3c] rounded-full cursor-pointer">
+                            <button onClick={toggleSearchBar} className="p-2 hover:bg-[#3c3c3c] rounded-full cursor-pointer" aria-label="Open Search">
                                 <Search className="size-5.5 text-slate-100" />
                             </button>
                         </div>
@@ -118,7 +118,7 @@ const Navbar = ({ onMenuClick, onImport }) => {
                     className="hidden"
                 />
                 {/* Import button to trigger file input */}
-                <button onClick={() => fileInputRef.current.click()} className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3c3c3c] rounded-3xl text-slate-100 sm:flex sm:items-center sm:gap-1 cursor-pointer">
+                <button onClick={() => fileInputRef.current.click()} className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3c3c3c] rounded-3xl text-slate-100 sm:flex sm:items-center sm:gap-1 cursor-pointer" aria-label="Import Video(s)">
                     <Upload className="size-5" />
                     <div className="hidden sm:block">Import</div>
                 </button>

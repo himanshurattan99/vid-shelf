@@ -81,6 +81,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                         }}
                             className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'favourites', playlists)) ? 'border border-gray-500' : ''}`}
                             title={(isVideoInPlaylist(video.id, 'favourites', playlists)) ? "Remove from Favourites" : "Add to Favourites"}
+                            aria-label={(isVideoInPlaylist(video.id, 'favourites', playlists)) ? "Remove from Favourites" : "Add to Favourites"}
                         >
                             <Heart className="w-6" />
                         </button>
@@ -95,6 +96,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                         }}
                             className={`py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity ${(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'border border-gray-500' : ''}`}
                             title={(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? "Remove from Watch Later" : "Add to Watch Later"}
+                            aria-label={(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? "Remove from Watch Later" : "Add to Watch Later"}
                         >
                             <Clock className="w-6" />
                         </button>
@@ -103,6 +105,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                         <button onClick={() => setShowPlaylistSelectorModal(true)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Add/Remove from playlist"
+                            aria-label="Add or Remove from playlist"
                         >
                             <ListVideo className="w-6" />
                         </button>
@@ -121,6 +124,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                         <button onClick={() => subtitlesInputRef.current.click()}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Add Subtitles"
+                            aria-label="Add Subtitles"
                         >
                             <Subtitles className="w-6" />
                         </button>
@@ -129,6 +133,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                         <button onClick={() => setShowDeleteFromLibraryModal(true)}
                             className="py-1 px-3 bg-[#2e2e2e] hover:bg-[#3e3e3e] hover:opacity-80 rounded-full cursor-pointer transition-opacity"
                             title="Delete Video"
+                            aria-label="Delete Video"
                         >
                             <Trash className="w-6" />
                         </button>
@@ -173,6 +178,7 @@ const Video = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVid
                                                 setSelectedPlaylistVideoId((selectedPlaylistVideoId === video.id) ? null : video.id)
                                             }}
                                                 className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                                aria-label="More Options"
                                             >
                                                 <MoreVertical className="size-5" />
                                             </button>

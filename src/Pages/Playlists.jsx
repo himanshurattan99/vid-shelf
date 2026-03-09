@@ -127,13 +127,14 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                                 <h3 className="text-sm font-medium leading-5 line-clamp-2">{playlist.name}</h3>
 
                                 <div className="relative">
-                                    {/* Toggle dropdown menu for this playlist */}
+                                    {/* Toggle dropdown menu for this playlist (Hidden in selection mode) */}
                                     {(!isSelectionMode && !isDefaultPlaylist) && (
                                         <button onClick={(e) => {
                                             e.stopPropagation()
                                             setSelectedPlaylistId((selectedPlaylistId === playlist.id) ? null : playlist.id)
                                         }}
                                             className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                            aria-label="More Options"
                                         >
                                             <MoreVertical className="size-5" />
                                         </button>

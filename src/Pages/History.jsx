@@ -163,18 +163,21 @@ const History = ({ videos, history, historyEnabled, removeVideosFromHistory, cle
                                 <h3 className="text-sm font-medium leading-5 line-clamp-2">{video.name}</h3>
 
                                 <div className="relative">
-                                    {/* Toggle dropdown menu for this video */}
-                                    <button onClick={(e) => {
-                                        e.stopPropagation()
-                                        setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
-                                    }}
-                                        className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
-                                    >
-                                        <MoreVertical className="size-5" />
-                                    </button>
+                                    {/* Toggle dropdown menu for this video (Hidden in selection mode) */}
+                                    {(!isSelectionMode) && (
+                                        <button onClick={(e) => {
+                                            e.stopPropagation()
+                                            setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
+                                        }}
+                                            className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 cursor-pointer"
+                                            aria-label="More Options"
+                                        >
+                                            <MoreVertical className="size-5" />
+                                        </button>
+                                    )}
 
                                     {/* Dropdown menu: Remove Video option */}
-                                    {(selectedVideoId === video.id) && (
+                                    {(selectedVideoId === video.id && !isSelectionMode) && (
                                         <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
                                             {/* Remove video from history (opens confirmation modal) */}
                                             <div onClick={(e) => {

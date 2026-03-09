@@ -423,7 +423,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                 <div className="">
                     <img src={thumbnail} className="w-full aspect-video lg:rounded-xl" alt="" />
                     <div className="bg-black/50 lg:rounded-xl absolute inset-0">
-                        <button onClick={handleThumbnailClick} className="w-full h-full flex justify-center items-center cursor-pointer">
+                        <button onClick={handleThumbnailClick} className="w-full h-full flex justify-center items-center cursor-pointer" aria-label="Play Video">
                             <Play className="w-1/10 sm:w-1/12 lg:w-1/16 transition-transform hover:scale-125 hover:rotate-360" />
                         </button>
                     </div>
@@ -456,14 +456,14 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                         {/* Control buttons and info */}
                         <div className="py-2 px-3 flex items-center gap-5">
                             {/* Play/Pause button */}
-                            <button onClick={(hasEnded) ? replayVideo : togglePlay} className="w-6 cursor-pointer transition-transform hover:rotate-360">
+                            <button onClick={(hasEnded) ? replayVideo : togglePlay} className="w-6 cursor-pointer transition-transform hover:rotate-360" aria-label={(hasEnded) ? "Replay Video" : ((isPlaying) ? "Pause Video" : "Play Video")}>
                                 {(hasEnded) ? <RotateCcw /> : ((isPlaying) ? <Pause /> : <Play />)}
                             </button>
 
                             {/* Volume control section */}
                             <div className="flex items-center gap-1 cursor-pointer">
                                 {/* Volume/Mute button */}
-                                <button onClick={toggleIsMuted} className="outline-none">
+                                <button onClick={toggleIsMuted} className="outline-none" aria-label={(isMuted) ? "Unmute" : "Mute"}>
                                     {(isMuted) ? <VolumeX className="w-6" /> : <Volume2 className="w-6" />}
                                 </button>
 
@@ -496,7 +496,8 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
 
                                 setShowThumbnailConfirmation(true)
                             }}
-                                className="ml-auto p-1 hover:bg-white/30 rounded-full cursor-pointer relative transition-colors" title="Set as Thumbnail"
+                                className="ml-auto p-1 hover:bg-white/30 rounded-full cursor-pointer relative transition-colors"
+                                title="Set as Thumbnail" aria-label="Set as Thumbnail"
                             >
                                 <Thumbnail className="w-6" />
                             </button>
@@ -508,6 +509,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                                     <button onClick={toggleSubtitlesMenu}
                                         className={`p-1 ${(selectedSubtitlesIndex !== -1) ? 'bg-white/30' : 'hover:bg-white/30'} rounded-full cursor-pointer relative transition-colors`}
                                         title="Subtitles"
+                                        aria-label="Subtitles Menu"
                                     >
                                         <Subtitles className="w-6" />
                                     </button>
@@ -538,6 +540,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                                 {/* Playback Speed Menu Toggle Button */}
                                 <button onClick={toggleShowPlaybackMenu}
                                     className="w-9 py-1 bg-white/20 hover:bg-white/30 rounded text-xs font-medium cursor-pointer transition-colors text-center"
+                                    aria-label="Playback Speed"
                                 >
                                     {playbackSpeed}x
                                 </button>
@@ -578,7 +581,7 @@ const VideoPlayer = ({ video, autoPlay = false, onPlayStart, addVideoToHistory, 
                             </div>
 
                             {/* Toggle fullscreen button */}
-                            <button onClick={toggleFullscreen} className="cursor-pointer">
+                            <button onClick={toggleFullscreen} className="cursor-pointer" aria-label={(isFullscreen) ? "Exit Fullscreen" : "Enter Fullscreen"}>
                                 {(isFullscreen) ?
                                     <Minimize className="w-6 transition-transform duration-250 hover:scale-105" />
                                     :

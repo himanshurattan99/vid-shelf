@@ -14,7 +14,7 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
     const [showPlaylistSelectorModal, setShowPlaylistSelectorModal] = useState(false)
     // State to toggle Delete from Library confirmation modal
     const [showDeleteFromLibraryModal, setShowDeleteFromLibraryModal] = useState(false)
-    // State variables for batch removal (multi-select)
+    // State variables for batch actions (multi-select)
     const [isSelectionMode, setIsSelectionMode] = useState(false)
     const [selectedVideoIds, setSelectedVideoIds] = useState([])
 
@@ -159,16 +159,19 @@ const Home = ({ videos, homeVideos, deleteVideos, playlists, addVideosToPlaylist
                                 <h3 className="text-sm font-medium leading-5 line-clamp-2">{video.name}</h3>
 
                                 <div className="relative">
-                                    {/* Toggle dropdown menu for this video */}
-                                    <button onClick={(e) => {
-                                        e.stopPropagation()
-                                        setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
-                                    }}
-                                        disabled={isSelectionMode}
-                                        className={`p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0 ${(isSelectionMode) ? 'opacity-0 cursor-not-allowed' : 'cursor-pointer'}`}
-                                    >
-                                        <MoreVertical className="size-5" />
-                                    </button>
+                                    {/* Toggle dropdown menu for this video (Hidden in selection mode) */}
+                                    {(!isSelectionMode) && (
+                                        <button onClick={(e) => {
+                                            e.stopPropagation()
+                                            setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
+                                        }}
+                                            disabled={isSelectionMode}
+                                            className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0"
+                                            aria-label="More Options"
+                                        >
+                                            <MoreVertical className="size-5" />
+                                        </button>
+                                    )}
 
                                     {/* Dropdown menu: Watch Later, Add/Remove from Playlist, Delete Video */}
                                     {(selectedVideoId === video.id && !isSelectionMode) && (
