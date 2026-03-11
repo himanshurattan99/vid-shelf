@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlignLeft as Menu, Search, Mic, X, Upload, User } from 'lucide-react'
-import vidshelf_logo from '../assets/logos/vidshelf-logo.png'
+import VidShelfIcon from './VidShelfIcon'
 
 const Navbar = ({ onMenuClick, onImport }) => {
     // State to track search bar expansion on mobile screens
@@ -44,9 +44,12 @@ const Navbar = ({ onMenuClick, onImport }) => {
                     <Menu className="w-6 text-slate-100" />
                 </button>
                 {/* Logo linking to the home page */}
-                <div onClick={() => navigate('/')}>
-                    <img src={vidshelf_logo} className="w-24 cursor-pointer" alt="VidShelf Logo" />
-                </div>
+                <button onClick={() => navigate('/')} className="flex items-center gap-1 cursor-pointer" aria-label="Go to Home">
+                    <VidShelfIcon />
+                    <div className="bg-gradient-to-br from-[#3FAEFF] via-[#1D92FF] to-[#0074EE] bg-clip-text text-transparent text-xl font-medium tracking-tight leading-none select-none">
+                        VidShelf
+                    </div>
+                </button>
             </div>
 
             {/* Middle section: Search bar (hidden on mobile screens, visible on larger screens) */}

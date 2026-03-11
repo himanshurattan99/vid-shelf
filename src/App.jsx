@@ -1,6 +1,7 @@
 import './App.css'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import TabMeta from './Components/TabMeta'
 import Navbar from './Components/Navbar'
 import Sidebar from './Components/Sidebar'
 import Home from './Pages/Home'
@@ -457,6 +458,9 @@ const App = () => {
 
   return (
     <>
+      {/* Sync browser tab favicon and title with the current route */}
+      <TabMeta videos={videos} playlists={playlists} />
+
       {/* Navbar with menu toggle and import functionality */}
       <Navbar onMenuClick={toggleSidebar} onImport={handleImport} />
 

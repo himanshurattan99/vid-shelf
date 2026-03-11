@@ -1,0 +1,16 @@
+<svg viewBox="0 0 232 180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="vidshelfBrandBlue" x1="6%" y1="4%" x2="94%" y2="96%">
+            <stop offset="0%" stop-color="#41B0FF" />
+            <stop offset="48%" stop-color="#1F93FF" />
+            <stop offset="100%" stop-color="#0073EE" />
+        </linearGradient>
+        <linearGradient id="vidshelfIconGloss" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.16" />
+            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="232" height="180" rx="40" fill="url(#vidshelfBrandBlue)" />
+    <rect x="0" y="0" width="232" height="84" rx="40" fill="url(#vidshelfIconGloss)" />
+    <path d="M92 58c0-7 7-11 13-8l52 32c6 4 6 12 0 16l-52 32c-6 3-13-1-13-8V58z" fill="#0B1220" />
+</svg>
