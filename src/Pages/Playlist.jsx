@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckSquare, MoreVertical, Trash } from 'lucide-react'
+import { CheckSquare, Trash } from 'lucide-react'
 import Error from '../Pages/Error'
+import VideoGrid from '../Components/VideoGrid'
 import Modal from '../Components/Modal'
-import { formatDuration } from '../utils'
 
 const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }) => {
     // State to track which video's option menu is open
@@ -115,99 +115,44 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
-                {playlistVideosArray.map((video) => {
-                    // Check if video exists by verifying 'url' property (it might have been deleted from library)
-                    if (!video.url) {
-                        return (
-                            <div key={video.id}
-                                onClick={() => {
-                                    setSelectedVideoId(video.id)
-                                    setShowRemoveFromPlaylistModal(true)
-                                }}
-                                className="aspect-video bg-[#282828] hover:bg-[#333] rounded-lg text-sm text-white/20 hover:text-slate-100 flex justify-center items-center cursor-pointer transition-colors"
-                            >
-                                Video Unavailable
-                            </div>
+            <VideoGrid
+                displayedVideos={playlistVideosArray}
+                onCardClick={(video, isSelected) => {
+                    if (isSelectionMode) {
+                        // Toggle video selection
+                        setSelectedVideoIds((isSelected) ?
+                            selectedVideoIds.filter((id) => id !== video.id)
+                            : [...selectedVideoIds, video.id]
                         )
+                    } else {
+                        // Normal click: open video page
+                        navigate(`/watch?v=${video.id}&p=${playlistId}`)
                     }
-
-                    // Determine if the current video is selected for batch actions
-                    const isSelected = selectedVideoIds.includes(video.id)
-
-                    return (
-                        <div key={video.id} className={`rounded-lg hover:bg-[#212121] transition-colors cursor-pointer ${(isSelected) ? 'bg-[#2a2a2a] ring-2 ring-[#007fff]' : ''}`}
-                            onClick={() => {
-                                if (isSelectionMode) {
-                                    // Toggle video selection
-                                    if (isSelected) {
-                                        setSelectedVideoIds(selectedVideoIds.filter((id) => id !== video.id))
-                                    } else {
-                                        setSelectedVideoIds([...selectedVideoIds, video.id])
-                                    }
-                                } else {
-                                    // Normal click: open video page
-                                    navigate(`/watch?v=${video.id}&p=${playlistId}`)
-                                }
-                            }}
+                }}
+                onUnavailableClick={(video) => {
+                    setSelectedVideoId(video.id)
+                    setShowRemoveFromPlaylistModal(true)
+                }}
+                selectedVideoId={selectedVideoId}
+                onToggleMenu={(videoId) => {
+                    setSelectedVideoId((selectedVideoId === videoId) ? null : videoId)
+                }}
+                renderMenu={() => (
+                    <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
+                        <div onClick={(e) => {
+                            e.stopPropagation()
+                            setShowRemoveFromPlaylistModal(true)
+                        }}
+                            className="py-2 px-3 hover:bg-[#3e3e3e] flex items-center gap-2 cursor-pointer"
                         >
-                            {/* Video thumbnail card with duration overlay */}
-                            <div className="rounded-lg relative overflow-hidden">
-                                <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
-                                <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
-                                    {formatDuration(video.duration)}
-                                </span>
-                                {/* Progress Bar Overlay */}
-                                {(video.progress > 0) && (
-                                    <div className="h-1 bg-[#007fff] rounded-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
-                                )}
-                                {/* Selection Overlay */}
-                                {(isSelectionMode) && (
-                                    <div className={`w-5 h-5 border-2 rounded-full ${(isSelected) ? 'bg-[#007fff] border-[#007fff]' : 'bg-black/50 border-white/50'} flex items-center justify-center absolute top-2 left-2 transition-colors`}>
-                                        {(isSelected) && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="py-1 ps-2 flex justify-between items-start gap-2">
-                                <h3 className="text-sm font-medium leading-5 line-clamp-2">{video.name}</h3>
-
-                                <div className="relative">
-                                    {/* Toggle dropdown menu for this video (Hidden in selection mode) */}
-                                    {(!isSelectionMode) && (
-                                        <button onClick={(e) => {
-                                            e.stopPropagation()
-                                            setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
-                                        }}
-                                            disabled={isSelectionMode}
-                                            className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0"
-                                            aria-label="More Options"
-                                        >
-                                            <MoreVertical className="size-5" />
-                                        </button>
-                                    )}
-
-                                    {/* Dropdown menu: Remove Video option */}
-                                    {(selectedVideoId === video.id && !isSelectionMode) && (
-                                        <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
-                                            {/* Remove video from playlist (opens confirmation modal) */}
-                                            <div onClick={(e) => {
-                                                e.stopPropagation()
-                                                setShowRemoveFromPlaylistModal(true)
-                                            }}
-                                                className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
-                                            >
-                                                <Trash className="w-4" />
-                                                <span>Remove from {playlist.name}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <Trash className="w-4" />
+                            <span>Remove from {playlist.name}</span>
                         </div>
-                    )
-                })}
-            </div>
+                    </div>
+                )}
+                isSelectionMode={isSelectionMode}
+                selectedVideoIds={selectedVideoIds}
+            />
 
             {/* Remove video(s) from playlist modal */}
             {(showRemoveFromPlaylistModal) && (

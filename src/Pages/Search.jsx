@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckSquare, MoreVertical, Clock, ListVideo, Trash } from 'lucide-react'
+import { CheckSquare, Clock, ListVideo, Trash } from 'lucide-react'
 import Error from './Error.jsx'
+import VideoGrid from '../Components/VideoGrid.jsx'
 import Modal from '../Components/Modal.jsx'
-import { searchVideos, formatDuration, isVideoInPlaylist } from '../utils.js'
+import { searchVideos, isVideoInPlaylist } from '../utils.js'
 
 const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVideosFromPlaylist }) => {
     const navigate = useNavigate()
@@ -105,113 +106,67 @@ const Search = ({ videos, deleteVideos, playlists, addVideosToPlaylist, removeVi
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-2 lg:gap-y-5 md:gap-x-3">
-                {searchResults.map((video) => {
-                    // Determine if the current video is selected for batch actions
-                    const isSelected = selectedVideoIds.includes(video.id)
-
-                    return (
-                        <div key={video.id} className={`hover:bg-[#212121] rounded-lg transition-colors cursor-pointer ${(isSelected) ? 'bg-[#2a2a2a] ring-2 ring-[#007fff]' : ''}`}
-                            onClick={() => {
-                                if (isSelectionMode) {
-                                    // Toggle video selection
-                                    if (isSelected) {
-                                        setSelectedVideoIds(selectedVideoIds.filter((id) => id !== video.id))
-                                    } else {
-                                        setSelectedVideoIds([...selectedVideoIds, video.id])
-                                    }
-                                } else {
-                                    // Normal click: open video page
-                                    navigate(`/watch?v=${video.id}`)
-                                }
-                            }}
+            <VideoGrid
+                displayedVideos={searchResults}
+                onCardClick={(video, isSelected) => {
+                    if (isSelectionMode) {
+                        // Toggle video selection
+                        setSelectedVideoIds((isSelected) ?
+                            selectedVideoIds.filter((id) => id !== video.id)
+                            : [...selectedVideoIds, video.id]
+                        )
+                    } else {
+                        // Normal click: open video page
+                        navigate(`/watch?v=${video.id}`)
+                    }
+                }}
+                selectedVideoId={selectedVideoId}
+                onToggleMenu={(videoId) => {
+                    setSelectedVideoId((selectedVideoId === videoId) ? null : videoId)
+                }}
+                renderMenu={() => (
+                    <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
+                        <div onClick={(e) => {
+                            e.stopPropagation()
+                            if (isVideoInPlaylist(selectedVideoId, 'watch_later', playlists)) {
+                                removeVideosFromPlaylist('watch_later', [selectedVideoId])
+                            } else {
+                                addVideosToPlaylist('watch_later', [selectedVideoId])
+                            }
+                            setSelectedVideoId(null)
+                        }}
+                            className="py-2 px-3 hover:bg-[#3e3e3e] flex items-center gap-2 cursor-pointer"
                         >
-                            {/* Video thumbnail card with duration overlay */}
-                            <div className="rounded-lg relative overflow-hidden">
-                                <img src={video.thumbnail} className="w-full aspect-video object-cover rounded-lg" alt={video.name} />
-                                <span className="px-1 bg-black opacity-75 rounded text-xs text-white absolute bottom-1 right-1">
-                                    {formatDuration(video.duration)}
-                                </span>
-                                {/* Progress Bar Overlay */}
-                                {(video.progress > 0) && (
-                                    <div className="h-1 bg-[#007fff] rounded-lg absolute bottom-0 left-0" style={{ width: `${(video.progress / video.duration) * 100}%` }}></div>
-                                )}
-                                {/* Selection Overlay */}
-                                {(isSelectionMode) && (
-                                    <div className={`w-5 h-5 border-2 rounded-full ${(isSelected) ? 'bg-[#007fff] border-[#007fff]' : 'bg-black/50 border-white/50'} flex items-center justify-center absolute top-2 left-2 transition-colors`}>
-                                        {(isSelected) && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="py-1 ps-2 flex justify-between items-start gap-2">
-                                <h3 className="text-sm font-medium leading-5 line-clamp-2">{video.name}</h3>
-
-                                <div className="relative">
-                                    {/* Toggle dropdown menu for this video (Hidden in selection mode) */}
-                                    {(!isSelectionMode) && (
-                                        <button onClick={(e) => {
-                                            e.stopPropagation()
-                                            setSelectedVideoId((selectedVideoId === video.id) ? null : video.id)
-                                        }}
-                                            disabled={isSelectionMode}
-                                            className="p-0.5 hover:bg-[#3c3c3c] rounded-full shrink-0"
-                                            aria-label="More Options"
-                                        >
-                                            <MoreVertical className="size-5" />
-                                        </button>
-                                    )}
-
-                                    {/* Dropdown menu: Watch Later, Add/Remove from Playlist, Delete Video */}
-                                    {(selectedVideoId === video.id && !isSelectionMode) && (
-                                        <div className="w-max py-2 bg-[#282828] border border-white/10 rounded-md text-sm absolute top-full right-0 z-10 whitespace-nowrap">
-                                            {/* Add/Remove video to Watch Later */}
-                                            <div onClick={(e) => {
-                                                e.stopPropagation()
-                                                if (isVideoInPlaylist(video.id, 'watch_later', playlists)) {
-                                                    removeVideosFromPlaylist('watch_later', [video.id])
-                                                } else {
-                                                    addVideosToPlaylist('watch_later', [video.id])
-                                                }
-                                                setSelectedVideoId(null)
-                                            }}
-                                                className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
-                                            >
-                                                <Clock className="w-4" />
-                                                <span>
-                                                    {(isVideoInPlaylist(video.id, 'watch_later', playlists)) ? 'Remove from Watch Later' : 'Add to Watch Later'}
-                                                </span>
-                                            </div>
-
-                                            {/* Add/Remove from Playlist (opens Playlist Selector modal) */}
-                                            <div onClick={(e) => {
-                                                e.stopPropagation()
-                                                setShowPlaylistSelectorModal(true)
-                                            }}
-                                                className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
-                                            >
-                                                <ListVideo className="w-4" />
-                                                <span>Select Playlist</span>
-                                            </div>
-
-                                            {/* Delete video (opens Delete from Library confirmation modal) */}
-                                            <div onClick={(e) => {
-                                                e.stopPropagation()
-                                                setShowDeleteFromLibraryModal(true)
-                                            }}
-                                                className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
-                                            >
-                                                <Trash className="w-4" />
-                                                <span>Delete Video</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <Clock className="w-4" />
+                            <span>
+                                {(isVideoInPlaylist(selectedVideoId, 'watch_later', playlists)) ? 'Remove from Watch Later' : 'Add to Watch Later'}
+                            </span>
                         </div>
-                    )
-                })}
-            </div>
+
+                        <div onClick={(e) => {
+                            e.stopPropagation()
+                            setShowPlaylistSelectorModal(true)
+                        }}
+                            className="py-2 px-3 hover:bg-[#3e3e3e] flex items-center gap-2 cursor-pointer"
+                        >
+                            <ListVideo className="w-4" />
+                            <span>Select Playlist</span>
+                        </div>
+
+                        <div onClick={(e) => {
+                            e.stopPropagation()
+                            setShowDeleteFromLibraryModal(true)
+                        }}
+                            className="py-2 px-3 hover:bg-[#3e3e3e] flex items-center gap-2 cursor-pointer"
+                        >
+                            <Trash className="w-4" />
+                            <span>Delete Video</span>
+                        </div>
+                    </div>
+                )}
+                isSelectionMode={isSelectionMode}
+                selectedVideoIds={selectedVideoIds}
+            />
 
             {/* Add/Remove video(s) via Playlist Selector modal */}
             {(showPlaylistSelectorModal) && (
