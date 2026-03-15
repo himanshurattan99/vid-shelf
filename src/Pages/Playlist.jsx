@@ -5,7 +5,7 @@ import Error from '../Pages/Error'
 import VideoBrowserPage from '../Components/VideoBrowserPage'
 import Modal from '../Components/Modal'
 
-const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }) => {
+const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylists }) => {
     const navigate = useNavigate()
 
     // State to toggle remove from playlist confirmation modal
@@ -120,7 +120,7 @@ const Playlist = ({ videos, playlists, removeVideosFromPlaylist, clearPlaylist }
                             title={`Clear ${playlist.name}?`}
                             onClose={() => setShowClearPlaylistModal(false)}
                             onConfirm={() => {
-                                clearPlaylist(playlistId)
+                                clearPlaylists([playlistId])
                                 setShowClearPlaylistModal(false)
                             }}
                         />

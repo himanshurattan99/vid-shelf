@@ -156,9 +156,20 @@ const Playlists = ({ videos, playlists, createPlaylist, clearPlaylists, removePl
                                         </button>
                                     )}
 
-                                    {/* Dropdown menu: Remove Playlist option */}
+                                    {/* Dropdown menu: Clear and remove playlist options */}
                                     {(selectedPlaylistId === playlist.id) && (
                                         <div className="w-max py-2 bg-[#282828] rounded-md border border-white/10 text-sm absolute top-full right-0 z-10 whitespace-nowrap">
+                                            {/* Clear playlist (opens confirmation modal) */}
+                                            <div onClick={(e) => {
+                                                e.stopPropagation()
+                                                setShowClearModal(true)
+                                            }}
+                                                className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center gap-2"
+                                            >
+                                                <Trash className="w-4" />
+                                                <span>Clear playlist</span>
+                                            </div>
+
                                             {/* Remove playlist (opens confirmation modal) */}
                                             <div onClick={(e) => {
                                                 e.stopPropagation()
@@ -197,14 +208,20 @@ const Playlists = ({ videos, playlists, createPlaylist, clearPlaylists, removePl
             {(showClearModal) && (
                 <Modal
                     type="danger"
-                    actionText="Clear Selected"
-                    title={`Clear ${selectedPlaylistIds.length} playlist(s)?`}
+                    actionText={(isSelectionMode) ? "Clear Selected" : "Clear"}
+                    title={(isSelectionMode) ? `Clear ${selectedPlaylistIds.length} playlist(s)?` : "Clear this playlist?"}
                     onClose={() => setShowClearModal(false)}
                     onConfirm={() => {
-                        clearPlaylists(selectedPlaylistIds)
+                        const idsToClear = (isSelectionMode) ? selectedPlaylistIds : [selectedPlaylistId]
+                        clearPlaylists(idsToClear)
+
                         setShowClearModal(false)
-                        setSelectedPlaylistIds([])
-                        setIsSelectionMode(false)
+                        if (isSelectionMode) {
+                            setSelectedPlaylistIds([])
+                            setIsSelectionMode(false)
+                        } else {
+                            setSelectedPlaylistId(null)
+                        }
                     }}
                 />
             )}

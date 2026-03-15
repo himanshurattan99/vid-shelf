@@ -335,21 +335,6 @@ const App = () => {
     showNotification('All videos cleared successfully')
   }
 
-  // Clear all videos of a specific playlist (but keep the playlist itself)
-  const clearPlaylist = (playlistId) => {
-    setPlaylists((prevPlaylists) => {
-      const updatedPlaylists = { ...prevPlaylists }
-      if (updatedPlaylists[playlistId]) {
-        updatedPlaylists[playlistId] = {
-          ...updatedPlaylists[playlistId],
-          videoIds: []
-        }
-      }
-      return updatedPlaylists
-    })
-    showNotification('Playlist cleared')
-  }
-
   // Clear all videos from multiple playlists
   const clearPlaylists = (playlistIdsToClear) => {
     setPlaylists((prevPlaylists) => {
@@ -495,7 +480,7 @@ const App = () => {
           <Route path='/watch' element={<Video videos={videos} deleteVideos={deleteVideos} playlists={playlists} addVideosToPlaylist={addVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} addVideoToHistory={addVideoToHistory} updateVideoThumbnail={updateVideoThumbnail} addVideoSubtitles={addVideoSubtitles} updateVideoProgress={updateVideoProgress} />} />
           <Route path='/history' element={<History videos={videos} history={history} historyEnabled={historyEnabled} removeVideosFromHistory={removeVideosFromHistory} clearHistory={clearHistory} />} />
           <Route path='/playlists' element={<Playlists videos={videos} playlists={playlists} createPlaylist={createPlaylist} clearPlaylists={clearPlaylists} removePlaylists={removePlaylists} />} />
-          <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideosFromPlaylist={removeVideosFromPlaylist} clearPlaylist={clearPlaylist} />} />
+          <Route path='/playlist' element={<Playlist videos={videos} playlists={playlists} removeVideosFromPlaylist={removeVideosFromPlaylist} clearPlaylists={clearPlaylists} />} />
           <Route path='/search' element={<Search videos={videos} deleteVideos={deleteVideos} playlists={playlists} addVideosToPlaylist={addVideosToPlaylist} removeVideosFromPlaylist={removeVideosFromPlaylist} />} />
           <Route path='/settings' element={<Settings historyEnabled={historyEnabled} setHistoryEnabled={setHistoryEnabled} clearHistory={clearHistory} deleteCustomPlaylists={deleteCustomPlaylists} clearLibrary={clearLibrary} clearAllData={clearAllData} />} />
           <Route path='*' element={<Error errorCode='404' errorMessage="Hmm, this page doesn't exist. Looks like you took a wrong turn!" />} />
