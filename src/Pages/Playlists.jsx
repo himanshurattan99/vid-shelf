@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CheckSquare, PlusSquare, MoreVertical, Trash } from 'lucide-react'
 import Modal from '../Components/Modal'
 
-const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
+const Playlists = ({ videos, playlists, createPlaylist, clearPlaylists, removePlaylists }) => {
     // Convert playlists object to array
     const playlistsArray = Object.values(playlists)
 
@@ -11,6 +11,8 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     // State to toggle create playlist modal
     const [showCreateModal, setShowCreateModal] = useState(false)
+    // State to toggle clear confirmation modal
+    const [showClearModal, setShowClearModal] = useState(false)
     // State to toggle delete confirmation modal
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     // State variables for batch removal (multi-select)
@@ -37,6 +39,20 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                                 className="py-1.5 px-4 bg-[#282828] hover:bg-[#3d3d3d] rounded-full text-sm font-medium transition-colors cursor-pointer"
                             >
                                 Cancel
+                            </button>
+
+                            {/* Batch Clear Button */}
+                            <button
+                                onClick={() => {
+                                    if (selectedPlaylistIds.length > 0) {
+                                        setShowClearModal(true)
+                                    }
+                                }}
+                                disabled={selectedPlaylistIds.length === 0}
+                                className={`py-1.5 px-4 rounded-full text-sm font-medium flex items-center gap-2 transition-colors ${(selectedPlaylistIds.length > 0) ? 'bg-[#007fff]/20 hover:bg-[#007fff] text-[#33a1ff] hover:text-white cursor-pointer' : 'bg-[#282828] text-slate-500 cursor-not-allowed'}`}
+                            >
+                                <Trash className="w-4" />
+                                <span>Clear Selected ({selectedPlaylistIds.length})</span>
                             </button>
 
                             {/* Batch Remove Button */}
@@ -174,6 +190,22 @@ const Playlists = ({ videos, playlists, createPlaylist, removePlaylists }) => {
                         }
                     }}
                     playlists={playlists}
+                />
+            )}
+
+            {/* Clear playlist(s) modal */}
+            {(showClearModal) && (
+                <Modal
+                    type="danger"
+                    actionText="Clear Selected"
+                    title={`Clear ${selectedPlaylistIds.length} playlist(s)?`}
+                    onClose={() => setShowClearModal(false)}
+                    onConfirm={() => {
+                        clearPlaylists(selectedPlaylistIds)
+                        setShowClearModal(false)
+                        setSelectedPlaylistIds([])
+                        setIsSelectionMode(false)
+                    }}
                 />
             )}
 
